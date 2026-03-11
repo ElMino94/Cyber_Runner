@@ -23,30 +23,26 @@
 - RTAO
 - AngelScript support
 
-## DAY 2
+## TODO
 
-- Simple HDR forward pass + tonemap
+- PassIO, editor renders to viewport, runtime renders to backbuffer
+- World system to handle transitions
+- World serialization/deserialization (JSON)
+- Simple HDR forward pass + tonemap via PassIO + debug renderer
 - Cube renderer with entities from the world
-- Asset system
-- Input system
-- Audio system
-
-## DAY 3
-
-- Rendering 3D models
-- Physics system
-
-## DAY 4
-
-- Scripting system
-- Project system
-
-## DAY 5
-
-- GPU driven
+- Asset system (ref counting/caching)
+- Input system (keyboard, mouse, gamepad)
+- Audio system (audio source, listener, simple playback)
+- Rendering 3D models (static GLTF)
+- Physics system (implement different types of colliders)
+- Scripting system (how tho)
+- Project system (simple)
+- Vulkan TLAS/BLAS/AS Build
+- GPU driven frustum cull
 - RT shadows
 - CSM
+- Shadow atlas
 - IBL
-- PostFX
+- PostFX (DOF, Bloom, TAA)
 - Skybox
 - Batched 2D sprite renderer
