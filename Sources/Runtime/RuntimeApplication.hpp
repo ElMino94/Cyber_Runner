@@ -7,4 +7,6 @@ class RuntimeApplication : public Termina::Application
 public:
     RuntimeApplication();
     ~RuntimeApplication() = default;
+
+    void OnUpdate(float dt) override;
 };

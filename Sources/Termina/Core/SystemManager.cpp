@@ -19,6 +19,7 @@ namespace Termina {
     void SystemManager::Begin()
     {
         // Create list of systems sorted on priority
+        m_UpdateList.clear();
         for (auto [_, system] : m_Subsystems) {
             m_UpdateList.push_back(system);
         }

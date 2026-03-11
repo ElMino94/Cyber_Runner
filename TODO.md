@@ -23,10 +23,30 @@
 - RTAO
 - AngelScript support
 
-## DAY 1
+## DAY 2
 
-- Resizing
-- Plug ImGui and Im3D
 - Dockspace setup for editor
 - World system
 - Cube renderer with entities from the world
+- Asset system
+- Start physics?
+
+## DAY 3
+
+- Physics system
+- Audio system
+
+## DAY 4
+
+- Scripting system
+- Project system
+
+## DAY 5
+
+- GPU driven
+- RT shadows
+- CSM
+- IBL
+- PostFX
+- Skybox
+- Batched 2D sprite renderer
