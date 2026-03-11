@@ -1,0 +1,15 @@
+-- xmake.lua
+
+includes("VMA")
+includes("Volk")
+includes("vulkan")
+includes("stb")
+includes("MiniAudio")
+includes("MikkTSpace")
+includes("JSON")
+includes("Jolt")
+includes("ImGui")
+includes("Im3D")
+includes("GLM")
+includes("GLFW")
+includes("CGLTF")
