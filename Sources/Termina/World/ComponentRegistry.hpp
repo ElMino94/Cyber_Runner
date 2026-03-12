@@ -180,7 +180,11 @@ namespace Termina {
     }                                                                                   \
     TERMINA_DLL_EXPORT void RegisterComponents() {
 
-#define COMPONENT_MODULE_END() }
+#define COMPONENT_MODULE_END()                                                          \
+    }                                                                                   \
+    TERMINA_DLL_EXPORT const std::vector<std::string>& GetComponentNames() {            \
+        return _termina_module_names_;                                                  \
+    }
 
 #define REGISTER_COMPONENT(Type, Name)                                      \
     ::Termina::ComponentRegistry::Get().Register<Type>(Name);               \

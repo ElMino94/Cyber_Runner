@@ -175,6 +175,27 @@ namespace Termina {
         if (m_Parent) m_Parent->DetachChild(this);
     }
 
+    void Actor::AddComponentRaw(Component* comp)
+    {
+        if (!comp) return;
+        std::type_index idx(typeid(*comp));
+        if (m_ComponentMap.count(idx)) return;
+        comp->SetOwner(this);
+        m_ComponentMap[idx] = comp;
+        m_Components.push_back(comp);
+    }
+
+    void Actor::RemoveComponentRaw(Component* comp)
+    {
+        if (!comp) return;
+        std::type_index idx(typeid(*comp));
+        auto mapIt = m_ComponentMap.find(idx);
+        if (mapIt == m_ComponentMap.end() || mapIt->second != comp) return;
+        m_Components.erase(std::find(m_Components.begin(), m_Components.end(), comp));
+        m_ComponentMap.erase(mapIt);
+        delete comp;
+    }
+
     bool Actor::IsDescendantOf(const Actor* actor) const
     {
         if (!actor) return false;

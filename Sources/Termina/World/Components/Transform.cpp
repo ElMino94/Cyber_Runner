@@ -266,6 +266,30 @@ namespace Termina {
         }
     }
 
+    void Transform::Serialize(nlohmann::json& out) const
+    {
+        out["position"] = { m_Position.x, m_Position.y, m_Position.z };
+        out["rotation"] = { m_Rotation.w, m_Rotation.x, m_Rotation.y, m_Rotation.z };
+        out["scale"]    = { m_Scale.x,    m_Scale.y,    m_Scale.z    };
+    }
+
+    void Transform::Deserialize(const nlohmann::json& in)
+    {
+        if (in.contains("position")) {
+            const auto& p = in["position"];
+            m_Position = { p[0].get<float>(), p[1].get<float>(), p[2].get<float>() };
+        }
+        if (in.contains("rotation")) {
+            const auto& r = in["rotation"];
+            m_Rotation = glm::quat(r[0].get<float>(), r[1].get<float>(), r[2].get<float>(), r[3].get<float>());
+        }
+        if (in.contains("scale")) {
+            const auto& s = in["scale"];
+            m_Scale = { s[0].get<float>(), s[1].get<float>(), s[2].get<float>() };
+        }
+        MarkDirty();
+    }
+
     void Transform::UpdateWorldTransform() const
     {
         if (m_Owner && m_Owner->GetParent()) {

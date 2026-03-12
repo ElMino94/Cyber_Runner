@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Termina/Core/System.hpp>
+#include <ThirdParty/JSON/json.hpp>
 
 namespace Termina {
     class Actor;
@@ -30,6 +31,9 @@ namespace Termina {
         virtual void OnAttach(Actor* newParent) {}
         virtual void OnDetach(Actor* oldParent) {}
         virtual void Inspect() {}
+
+        virtual void Serialize(nlohmann::json& out) const {}
+        virtual void Deserialize(const nlohmann::json& in) {}
 
         void SetOwner(Actor* actor) { m_Owner = actor; }
         Actor* GetOwner() { return m_Owner; }

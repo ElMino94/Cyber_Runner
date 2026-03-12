@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 #include "Actor.hpp"
 #include "Components/Transform.hpp"
@@ -52,9 +53,15 @@ namespace Termina {
 
         const std::vector<std::shared_ptr<Actor>>& GetActors() const { return m_Actors; }
         std::vector<Actor*> GetRootActors() const;
+
+        const std::string& GetName() const { return m_Name; }
+        void SetName(const std::string& name) { m_Name = name; }
+
+        const std::string& GetCurrentPath() const { return m_CurrentPath; }
     private:
         std::vector<std::shared_ptr<Actor>> m_Actors;
 
         std::string m_CurrentPath = "";
+        std::string m_Name = "World";
     };
 }

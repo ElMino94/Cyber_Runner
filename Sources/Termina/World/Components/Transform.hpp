@@ -66,6 +66,9 @@ namespace Termina {
         // Call this after manually modifying transform properties via reflection
         void MarkTransformDirty() { MarkDirty(); }
 
+        void Serialize(nlohmann::json& out) const override;
+        void Deserialize(const nlohmann::json& in) override;
+
         virtual UpdateFlags GetUpdateFlags() const override { return UpdateFlags::UpdateDuringEditor; }
     private:
         void MarkDirty();

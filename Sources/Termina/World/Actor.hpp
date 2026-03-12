@@ -18,7 +18,7 @@ namespace Termina {
     public:
         Actor(World* parentWorld, const std::string& name = "Entity");
         virtual ~Actor();
-    
+
         template<typename T, typename... Args>
         T& AddComponent(Args&&... args)
         {
@@ -30,21 +30,21 @@ namespace Termina {
             m_Components.push_back(std::move(ptr));
             return *ptr;
         }
-    
+
         template<typename T>
         T& GetComponent() const
         {
             auto it = m_ComponentMap.find(typeid(T));
             return *static_cast<T*>(it->second);
         }
-    
+
         template<typename T>
         bool HasComponent() const
         {
             auto it = m_ComponentMap.find(typeid(T));
             return (it != m_ComponentMap.end()) ? true : false;
         }
-    
+
         template<typename T>
         void RemoveComponent()
         {
@@ -55,7 +55,7 @@ namespace Termina {
                 m_ComponentMap.erase(it);
             }
         }
-    
+
         void OnInit();
         void OnShutdown();
         void OnPlay();
@@ -72,35 +72,45 @@ namespace Termina {
         void OnPostRender(float deltaTime);
         void OnAttach(Actor* newParent);
         void OnDetach(Actor* oldParent);
-    
+
         void AttachChild(Actor* child);
         void DetachChild(Actor* child);
         void DetachFromParent();
         bool IsDescendantOf(const Actor* actor) const;
-    
+
         Actor* GetParent() const { return m_Parent; }
         const std::vector<Actor*>& GetChildren() const { return m_Children; }
-    
+
         bool IsActive() const { return m_Active; }
         void SetActive(bool a) { m_Active = a; }
-    
+
         std::string GetName() const { return m_Name; }
         void SetName(const std::string& name) { m_Name = name; }
-    
+
         std::vector<Component*>& GetAllComponents() { return m_Components; }
-    
+
+        // Insert a pre-created component (e.g., from ComponentRegistry::CreateByName).
+        // Takes ownership. Does nothing if a component of the same type is already present.
+        void AddComponentRaw(Component* comp);
+
+        // Remove and delete a component by pointer. Does nothing if not found.
+        void RemoveComponentRaw(Component* comp);
+
         uint64 GetID() const { return m_ID; }
         World* GetParentWorld() { return m_ParentWorld; }
-    
+
     private:
+        friend class World;
+        void SetID(uint64 id) { m_ID = id; }
+
         World* m_ParentWorld;
-    
+
         std::string m_Name;
         bool m_Active = true;
-    
+
         std::vector<Component*> m_Components;
         std::unordered_map<std::type_index, Component*> m_ComponentMap;
-    
+
         Actor* m_Parent = nullptr;
         std::vector<Actor*> m_Children;
         uint64 m_ID = NewID();
