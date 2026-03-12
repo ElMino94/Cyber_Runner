@@ -1,6 +1,6 @@
 -- xmake.lua
 
-target("Game")
+target("GameAssembly")
     set_kind("shared")
     add_files("**.cpp")
     add_headerfiles("**.hpp")

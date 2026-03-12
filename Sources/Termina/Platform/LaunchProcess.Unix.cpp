@@ -3,19 +3,30 @@
 
 #if !defined(TRMN_WINDOWS)
 
-namespace Termina {
-    void LaunchProcess::Launch(const std::string& executable, const std::vector<std::string>& arguments)
-    {
-        // Build the command line
-        std::string command = executable;
-        for (const auto& arg : arguments) {
-            command += " " + arg;
-        }
+#include <unistd.h>
+#include <sys/wait.h>
 
-        // Use system() to launch the process
-        int result = system(command.c_str());
-        if (result != 0) {
-            TN_ERROR("Failed to launch process: %s", command.c_str());
+namespace Termina {
+    int LaunchProcess::Launch(const std::string& executable, const std::vector<std::string>& arguments)
+    {
+        // Use fork and exec to launch the process
+        pid_t pid = fork();
+        if (pid == -1) {
+            TN_ERROR("Failed to fork process");
+            return -1;
+        } else if (pid == 0) {
+            // In child process
+            std::vector<char*> args;
+            args.push_back(const_cast<char*>(executable.c_str()));
+            for (const auto& arg : arguments) args.push_back(const_cast<char*>(arg.c_str()));
+            args.push_back(nullptr);
+            execvp(args[0], args.data());
+            TN_ERROR("Failed to exec process");
+            return -1;
+        } else {
+            int status;
+            waitpid(pid, &status, 0);
+            return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
         }
     }
 }

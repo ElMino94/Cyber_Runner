@@ -12,8 +12,8 @@ namespace Termina {
         ScriptSystem();
         ~ScriptSystem();
 
-        void Compile();
-        void Recompile();
+        bool Compile();
+        bool Recompile();
         void Update(float deltaTime) override;
 
         UpdateFlags GetUpdateFlags() const override { return UpdateFlags::UpdateDuringEditor; }
