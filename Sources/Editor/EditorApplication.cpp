@@ -45,7 +45,7 @@ EditorApplication::EditorApplication()
                 auto actor = world->SpawnActor();
                 actor->SetName("Cube " + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z));
                 
-                Termina::Transform& transform = actor->AddComponent<Termina::Transform>();
+                Termina::Transform& transform = actor->GetComponent<Termina::Transform>();
                 transform.SetPosition({ x * 2.0f, y * 2.0f, z * 2.0f });
             }
         }

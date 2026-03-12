@@ -23,7 +23,9 @@ namespace Termina {
         T& AddComponent(Args&&... args)
         {
             static_assert(std::is_base_of_v<Component, T>);
-            // TODO: static_assert if component is not in registry
+            if (HasComponent<T>())
+                return GetComponent<T>();
+
             T* ptr = new T(this, std::forward<Args>(args)...);
             ptr->SetOwner(this);
             m_ComponentMap[typeid(T)] = ptr;

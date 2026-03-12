@@ -54,6 +54,8 @@ void ViewportPanel::OnImGuiRender()
     gizmoButton("S", ImGuizmo::SCALE);
     ImGui::NewLine();
 
+    ImVec2 imagePos;
+    ImVec2 imageSize;
     if (colorTexture) {
         auto colorView = renderer->GetResourceViewCache()->GetTextureView(
             Termina::TextureViewDesc()
@@ -64,17 +66,15 @@ void ViewportPanel::OnImGuiRender()
                 .SetArrayLayerRange(0, 1)
                 .SetTexture(colorTexture)
         );
-        auto contentRegion = ImGui::GetContentRegionAvail();
-        ImGui::Image((ImTextureID)colorView->GetBindlessIndex(), {contentRegion.x, contentRegion.y}, {0, 0}, {1, 1});
+        imagePos = ImGui::GetCursorScreenPos();
+        imageSize = ImGui::GetContentRegionAvail();
+        ImGui::Image((ImTextureID)colorView->GetBindlessIndex(), imageSize, {0, 0}, {1, 1});
     }
 
-    float windowWidth = (float)ImGui::GetWindowWidth();
-    float windowHeight = (float)ImGui::GetWindowHeight();
-    
     ImGuizmo::BeginFrame();
     ImGuizmo::SetOrthographic(false);
     ImGuizmo::SetDrawlist();
-    ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+    ImGuizmo::SetRect(imagePos.x, imagePos.y, imageSize.x, imageSize.y);
 
     if (m_Context.SelectedActor) {
         Termina::Transform& transform = m_Context.SelectedActor->GetComponent<Termina::Transform>();
