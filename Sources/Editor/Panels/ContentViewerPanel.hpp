@@ -15,6 +15,8 @@ public:
 
     void OnImGuiRender() override;
 
+    const std::filesystem::path& GetCurrentPath() const { return m_CurrentPath; }
+
 private:
     std::filesystem::path m_CurrentPath;
     std::string m_SelectedEntry;

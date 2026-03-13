@@ -49,6 +49,10 @@ namespace Termina {
         static void ActorPickerSource(Actor* actor);
         static bool TryReceiveActor(Actor* current, const std::function<void(Actor*)>& callback);
 
+        // Low-level drag and drop (no UI)
+        static bool AcceptActor(const std::function<void(Actor*)>& callback);
+        static bool AcceptAsset(const std::function<void(const std::string&)>& callback);
+
     private:
         static void SetTheme();
         static bool TryReceiveAssetImpl(const std::string& currentPath, const std::function<void(const std::string&)>& callback);

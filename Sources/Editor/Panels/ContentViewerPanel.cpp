@@ -5,6 +5,8 @@
 
 #include <Termina/Core/Application.hpp>
 #include <Termina/Asset/AssetSystem.hpp>
+#include <Termina/World/Actor.hpp>
+#include <Termina/World/World.hpp>
 
 #include <filesystem>
 #include <fstream>
@@ -54,6 +56,8 @@ const char* ContentViewerPanel::GetFileIcon(const fs::path& path) const
         return "[MAT]";
     if (ext == ".gltf" || ext == ".glb")
         return "[MDL]";
+    if (ext == ".trp")
+        return "[PFB]";
     return "[FILE]";
 }
 
@@ -254,6 +258,8 @@ void ContentViewerPanel::DrawModals()
 
 void ContentViewerPanel::OnImGuiRender()
 {
+    m_Context.ContentViewer = this;
+
     Termina::UIUtils::BeginEditorWindow(m_Name.c_str(), &m_Open);
 
     // Breadcrumb navigation
@@ -320,6 +326,13 @@ void ContentViewerPanel::OnImGuiRender()
             if (ImGui::IsMouseDoubleClicked(0))
                 m_CurrentPath = entry.path();
         }
+
+        Termina::UIUtils::AcceptActor([this, entry](Termina::Actor* dragged) {
+            std::string filename = std::string(dragged->GetName()) + ".trp";
+            fs::path finalPath = UniquePath(entry.path() / filename);
+            dragged->GetParentWorld()->SaveActorToJSON(dragged, finalPath);
+        });
+
         DrawContextMenuEntry(entry.path().string(), true);
     }
 
@@ -353,6 +366,18 @@ void ContentViewerPanel::OnImGuiRender()
 
         // Drag source for asset picking
         Termina::UIUtils::AssetPickerSource(entry.path().string());
+    }
+
+    // Drop target on empty space in current folder
+    ImVec2 remaining = ImGui::GetContentRegionAvail();
+    if (remaining.y > 0.0f)
+    {
+        ImGui::InvisibleButton("##content_drop_target", remaining);
+        Termina::UIUtils::AcceptActor([this](Termina::Actor* dragged) {
+            std::string filename = std::string(dragged->GetName()) + ".trp";
+            fs::path finalPath = UniquePath(m_CurrentPath / filename);
+            dragged->GetParentWorld()->SaveActorToJSON(dragged, finalPath);
+        });
     }
 
     // Right-click on empty space

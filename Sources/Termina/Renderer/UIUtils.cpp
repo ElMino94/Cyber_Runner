@@ -192,6 +192,11 @@ namespace Termina {
         ImGui::Button(label.c_str(), size);
         ImGui::PopStyleColor(3);
 
+        return AcceptActor(callback);
+    }
+
+    bool UIUtils::AcceptActor(const std::function<void(Actor*)>& callback)
+    {
         if (ImGui::BeginDragDropTarget())
         {
             if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ACTOR_PTR"))
@@ -199,6 +204,23 @@ namespace Termina {
                 Actor* actor = *static_cast<Actor**>(payload->Data);
                 if (actor)
                     callback(actor);
+                ImGui::EndDragDropTarget();
+                return true;
+            }
+            ImGui::EndDragDropTarget();
+        }
+        return false;
+    }
+
+    bool UIUtils::AcceptAsset(const std::function<void(const std::string&)>& callback)
+    {
+        if (ImGui::BeginDragDropTarget())
+        {
+            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ASSET_PATH"))
+            {
+                const char* path = static_cast<const char*>(payload->Data);
+                if (path && path[0] != '\0')
+                    callback(path);
                 ImGui::EndDragDropTarget();
                 return true;
             }

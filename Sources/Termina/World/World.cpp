@@ -69,9 +69,143 @@ namespace Termina {
         return newActor;
     }
 
+    Actor* World::SpawnActorFromJSON(const std::string& filename)
+    {
+        std::ifstream file(filename);
+        if (!file.is_open()) {
+            TN_ERROR("Could not open prefab '%s' for reading.", filename.c_str());
+            return nullptr;
+        }
+
+        nlohmann::json root;
+        try {
+            file >> root;
+        } catch (const nlohmann::json::exception& e) {
+            TN_ERROR("JSON parse error in prefab '%s': %s", filename.c_str(), e.what());
+            return nullptr;
+        }
+
+        if (!root.contains("actors") || !root["actors"].is_array() || root["actors"].empty()) {
+            TN_ERROR("Prefab '%s' does not contain any actors.", filename.c_str());
+            return nullptr;
+        }
+
+        // Prefabs are stored as a flat list where the first actor is the root of the prefab.
+        // We need to remap IDs because the IDs in the file might collide with existing ones.
+        struct ActorEntry {
+            Actor* actor;
+            uint64 oldId;
+            uint64 oldParentId;
+        };
+        std::vector<ActorEntry> entries;
+        std::unordered_map<uint64, Actor*> idMap;
+
+        for (const auto& actorJson : root["actors"]) {
+            uint64 oldId = std::stoull(actorJson.value("id", "0"));
+            std::string actorName = actorJson.value("name", "Actor");
+            bool actorActive = actorJson.value("active", true);
+
+            Actor* actor = SpawnActor();
+            actor->SetName(actorName);
+            actor->SetActive(actorActive);
+
+            // Deserialize components.
+            if (actorJson.contains("components")) {
+                for (const auto& compJson : actorJson["components"]) {
+                    std::string type = compJson.value("type", "");
+                    bool compActive  = compJson.value("active", true);
+                    const auto& data = compJson.contains("data") ? compJson["data"] : nlohmann::json::object();
+
+                    if (type == "Transform") {
+                        actor->GetComponent<Transform>().Deserialize(data);
+                        actor->GetComponent<Transform>().SetActive(compActive);
+                        continue;
+                    }
+
+                    Component* comp = ComponentRegistry::Get().CreateByName(type, actor);
+                    if (comp) {
+                        comp->SetActive(compActive);
+                        comp->Deserialize(data);
+                        actor->AddComponentRaw(comp);
+                    }
+                }
+            }
+
+            uint64 oldParentId = 0;
+            if (actorJson.contains("parentId") && !actorJson["parentId"].is_null())
+                oldParentId = std::stoull(actorJson["parentId"].get<std::string>());
+
+            entries.push_back({ actor, oldId, oldParentId });
+            idMap[oldId] = actor;
+        }
+
+        // Wire hierarchy within the prefab
+        for (const auto& entry : entries) {
+            if (entry.oldParentId != 0 && idMap.count(entry.oldParentId)) {
+                idMap[entry.oldParentId]->AttachChild(entry.actor);
+            }
+        }
+
+        return entries.empty() ? nullptr : entries[0].actor;
+    }
+
+    void World::SaveActorToJSON(Actor* actor, const std::string& filename)
+    {
+        if (!actor) return;
+
+        nlohmann::json root;
+        root["version"] = 1;
+        
+        nlohmann::json actorsJson = nlohmann::json::array();
+
+        std::function<void(Actor*, bool)> serializeActorRecursive = [&](Actor* current, bool isRoot) {
+            nlohmann::json actorJson;
+            actorJson["id"]   = std::to_string(current->GetID());
+            actorJson["name"] = current->GetName();
+            actorJson["active"] = current->IsActive();
+
+            if (!isRoot && current->GetParent())
+                actorJson["parentId"] = std::to_string(current->GetParent()->GetID());
+            else
+                actorJson["parentId"] = nullptr;
+
+            nlohmann::json compsJson = nlohmann::json::array();
+            for (Component* comp : current->GetAllComponents()) {
+                std::string typeName = ComponentRegistry::Get().GetNameForType(typeid(*comp));
+                if (typeName.empty()) continue;
+
+                nlohmann::json compJson;
+                compJson["type"]   = typeName;
+                compJson["active"] = comp->IsActive();
+                nlohmann::json data = nlohmann::json::object();
+                comp->Serialize(data);
+                compJson["data"] = std::move(data);
+                compsJson.push_back(std::move(compJson));
+            }
+            actorJson["components"] = std::move(compsJson);
+            actorsJson.push_back(std::move(actorJson));
+
+            for (Actor* child : current->GetChildren())
+                serializeActorRecursive(child, false);
+        };
+
+        serializeActorRecursive(actor, true);
+        root["actors"] = std::move(actorsJson);
+
+        std::ofstream file(filename);
+        if (!file.is_open()) {
+            TN_ERROR("Could not open '%s' for writing prefab.", filename.c_str());
+            return;
+        }
+        file << root.dump(4);
+    }
+
     void World::DestroyActor(Actor* actor)
     {
         if (!actor) return;
+
+        if (m_MainCamera == actor) m_MainCamera = nullptr;
+        if (m_AudioListener == actor) m_AudioListener = nullptr;
 
         for (uint64 i = 0; i < m_Actors.size(); ++i) {
             if (m_Actors[i]->GetID() == actor->GetID()) {
@@ -184,6 +318,8 @@ namespace Termina {
     void World::Clear()
     {
         m_Actors.clear();
+        m_MainCamera = nullptr;
+        m_AudioListener = nullptr;
     }
 
     void World::LoadFromFile(const std::string& filename)

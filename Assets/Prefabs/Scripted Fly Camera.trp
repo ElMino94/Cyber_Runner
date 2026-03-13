@@ -1,0 +1,75 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "far": 1000.0,
+                        "fov": 75.0,
+                        "near": 0.009999999776482582,
+                        "primary": true
+                    },
+                    "type": "Camera Component"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "primary": true,
+                        "velocity": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ]
+                    },
+                    "type": "Audio Listener Component"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "acceleration": 20.0,
+                        "fastMultiplier": 4.0,
+                        "moveSpeed": 5.0,
+                        "pitch": 0.0,
+                        "sensitivity": 0.15000000596046448,
+                        "velocity": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "wasRotating": false,
+                        "yaw": 0.0
+                    },
+                    "type": "FlyCamComponent"
+                }
+            ],
+            "id": "14506066668633990541",
+            "name": "Scripted Fly Camera",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}

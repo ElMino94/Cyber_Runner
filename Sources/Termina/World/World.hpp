@@ -19,6 +19,10 @@ namespace Termina {
         Actor* SpawnActor();
         /// Spawns a new actor from an existing actor, copying its components.
         Actor* SpawnActorFrom(Actor* actor);
+        /// Spawns a new actor from a JSON file (prefab).
+        Actor* SpawnActorFromJSON(const std::string& filename);
+        /// Saves an actor and its children to a JSON file (prefab).
+        void SaveActorToJSON(Actor* actor, const std::string& filename);
         /// Destroys an actor, removing it from the world.
         void DestroyActor(Actor* actor);
         /// Returns an actor by its unique ID.

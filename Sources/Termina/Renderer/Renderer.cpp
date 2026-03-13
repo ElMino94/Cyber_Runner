@@ -10,7 +10,7 @@
 #include "Renderer/Passes/DeferredPass.hpp"
 #include "Renderer/Passes/TonemapPass.hpp"
 #include "Renderer/Passes/ImGuiPass.hpp"
-#include "Renderer/Passes/TrianglePass.hpp"
+#include "Renderer/Passes/DebugPass.hpp"
 #include "Renderer/UIUtils.hpp"
 #include "World/Component.hpp"
 #include "World/ComponentRegistry.hpp"
@@ -151,6 +151,7 @@ namespace Termina {
             new GBufferPass(),
             new DeferredPass(),
             new TonemapPass(),
+            new DebugPass(),
             new ImGuiPass()
         };
     }

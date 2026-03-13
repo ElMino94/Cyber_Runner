@@ -2,6 +2,7 @@
 
 #include "ImGui/imgui.h"
 #include "Termina/Renderer/UIUtils.hpp"
+#include "ContentViewerPanel.hpp"
 #include <Termina/Core/Application.hpp>
 #include <Termina/World/WorldSystem.hpp>
 #include <Termina/World/World.hpp>
@@ -30,24 +31,22 @@ void WorldHierarchyPanel::DrawActorNode(Termina::Actor* actor)
         ImGui::PopStyleColor();
 
     // Drag source
-    if (ImGui::BeginDragDropSource())
-    {
-        ImGui::SetDragDropPayload("ACTOR", &actor, sizeof(actor));
-        ImGui::Text("%s", actor->GetName().c_str());
-        ImGui::EndDragDropSource();
-    }
+    Termina::UIUtils::ActorPickerSource(actor);
 
-    // Drop target: reparent dragged actor as child of this one
-    if (ImGui::BeginDragDropTarget())
-    {
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ACTOR"))
+    // Drop target: reparent dragged actor as child of this one, or spawn prefab
+    Termina::UIUtils::AcceptActor([actor](Termina::Actor* dragged) {
+        if (dragged != actor && !actor->IsDescendantOf(dragged))
+            actor->AttachChild(dragged);
+    });
+
+    Termina::UIUtils::AcceptAsset([actor](const std::string& path) {
+        if (path.find(".trp") != std::string::npos)
         {
-            Termina::Actor* dragged = *(Termina::Actor**)payload->Data;
-            if (dragged != actor && !actor->IsDescendantOf(dragged))
-                actor->AttachChild(dragged);
+            auto* spawned = actor->GetParentWorld()->SpawnActorFromJSON(path);
+            if (spawned)
+                actor->AttachChild(spawned);
         }
-        ImGui::EndDragDropTarget();
-    }
+    });
 
     if (ImGui::IsItemClicked())
         m_Context.ItemToInspect = actor;
@@ -119,21 +118,25 @@ void WorldHierarchyPanel::OnImGuiRender()
     for (auto* root : world->GetRootActors())
         DrawActorNode(root);
 
-    // Drop target on empty space: demote dragged actor to root level.
+    // Drop target on empty space: demote dragged actor to root level or spawn prefab.
     ImVec2 remaining = ImGui::GetContentRegionAvail();
     if (remaining.y > 0.0f)
     {
         ImGui::InvisibleButton("##root_drop", remaining);
-        if (ImGui::BeginDragDropTarget())
-        {
-            if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("ACTOR"))
+        
+        Termina::UIUtils::AcceptActor([](Termina::Actor* dragged) {
+            dragged->DetachFromParent();
+        });
+
+        Termina::UIUtils::AcceptAsset([world](const std::string& path) {
+            if (path.find(".trp") != std::string::npos)
             {
-                Termina::Actor* dragged = *(Termina::Actor**)payload->Data;
-                dragged->DetachFromParent();
+                world->SpawnActorFromJSON(path);
             }
-            ImGui::EndDragDropTarget();
-        }
+        });
     }
+
+
 
     Termina::UIUtils::EndEditorWindow();
 }

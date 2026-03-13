@@ -7,6 +7,7 @@
 
 #include <Termina/Renderer/Renderer.hpp>
 #include <Termina/Renderer/UIUtils.hpp>
+#include <Termina/Renderer/Passes/DebugPass.hpp>
 #include <Termina/Shader/ShaderManager.hpp>
 #include <Termina/Core/Logger.hpp>
 
@@ -96,6 +97,7 @@ void EditorApplication::OpenWorld()
     SaveWorld();
 
     auto* worldSystem = GetSystem<Termina::WorldSystem>();
+    m_Context.ItemToInspect = nullptr;
     if (worldSystem->LoadWorld(path))
     {
         // Both old world (now unloaded) and new world are settled;
@@ -109,6 +111,7 @@ void EditorApplication::NewWorld()
     // Save the current world before replacing it.
     SaveWorld();
 
+    m_Context.ItemToInspect = nullptr;
     auto* worldSystem = GetSystem<Termina::WorldSystem>();
     worldSystem->NewWorld();
 
