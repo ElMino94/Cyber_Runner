@@ -44,7 +44,7 @@ EditorApplication::EditorApplication()
             for (int z = 0; z < gridSize; ++z) {
                 auto actor = world->SpawnActor();
                 actor->SetName("Cube " + std::to_string(x) + "," + std::to_string(y) + "," + std::to_string(z));
-                
+
                 Termina::Transform& transform = actor->GetComponent<Termina::Transform>();
                 transform.SetPosition({ x * 2.0f, y * 2.0f, z * 2.0f });
             }
@@ -63,7 +63,8 @@ void EditorApplication::OnUpdate(float dt)
     float h = static_cast<float>(m_Window->GetHeight());
     if (!ImGui::GetIO().WantCaptureKeyboard)
         m_Camera.Update(dt, w, h);
-    renderer->SetCurrentCamera(m_Camera);
+    if (!GetSystem<Termina::WorldSystem>()->IsPlaying())
+        renderer->SetCurrentCamera(m_Camera);
 
     RenderDockspace();
 

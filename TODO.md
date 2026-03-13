@@ -26,9 +26,9 @@
 ## TODO
 
 ### Friday
-- 3D audio + audio components
 - Change camera to main camera on play
 - Asset system (ref counting/caching)
+- 3D audio + audio components
 - Textures
 - Rendering 3D models (static GLTF) + mesh component
 - Simple HDR forward pass + tonemap via PassIO + debug renderer

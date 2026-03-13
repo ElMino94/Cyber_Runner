@@ -1,5 +1,7 @@
 #include "World.hpp"
 #include "ComponentRegistry.hpp"
+#include "Renderer/Components/CameraComponent.hpp"
+#include "Renderer/Renderer.hpp"
 
 #include <Termina/Core/Application.hpp>
 #include <Termina/Core/ID.hpp>
@@ -28,7 +30,7 @@ namespace Termina {
     Actor* World::SpawnActorFrom(Actor* actor)
     {
         Actor* newActor = SpawnActor();
-        
+
         nlohmann::json temp;
         for (Component* comp : actor->GetAllComponents()) {
             std::string typeName = ComponentRegistry::Get().GetNameForType(typeid(*comp));
@@ -122,6 +124,10 @@ namespace Termina {
 
     void World::OnPlay()
     {
+        RendererSystem* renderer = Application::GetSystem<RendererSystem>();
+        if (renderer) {
+            renderer->SetCurrentCamera(GetMainCamera());
+        }
         for (auto& actor : m_Actors) actor->OnPlay();
     }
 
@@ -360,5 +366,12 @@ namespace Termina {
             return;
         }
         file << root.dump(4);
+    }
+
+    Camera World::GetMainCamera() const
+    {
+        if (m_MainCamera)
+            return m_MainCamera->GetComponent<CameraComponent>().GetCamera();
+        return Camera();
     }
 }

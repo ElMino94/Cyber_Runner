@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include <Termina/Renderer/Camera.hpp>
+
 #include "Actor.hpp"
 #include "Components/Transform.hpp"
 
@@ -53,8 +55,12 @@ namespace Termina {
         void SetName(const std::string& name) { m_Name = name; }
 
         const std::string& GetCurrentPath() const { return m_CurrentPath; }
+
+        void SetMainCamera(Actor* camera) { m_MainCamera = camera; }
+        Camera GetMainCamera() const;
     private:
         std::vector<std::shared_ptr<Actor>> m_Actors;
+        Actor* m_MainCamera = nullptr;
 
         std::string m_CurrentPath = "";
         std::string m_Name = "World";

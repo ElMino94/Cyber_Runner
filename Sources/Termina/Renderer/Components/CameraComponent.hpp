@@ -9,13 +9,18 @@ namespace Termina {
     public:
         CameraComponent() = default;
         CameraComponent(Actor* owner) : Component(owner) {}
+        ~CameraComponent() override;
 
         Camera& GetCamera() { return m_Camera; }
         const Camera& GetCamera() const { return m_Camera; }
 
+        void OnPreUpdate(float deltaTime) override;
         void OnUpdate(float deltaTime) override;
         void OnPostRender(float deltaTime) override;
         void Inspect() override;
+
+        bool IsPrimary() const { return m_Primary; }
+        void SetPrimary(bool primary) { m_Primary = primary; }
 
         UpdateFlags GetUpdateFlags() const override { return UpdateFlags::UpdateDuringEditor; }
     private:

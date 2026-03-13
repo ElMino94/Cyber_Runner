@@ -3,9 +3,16 @@
 #include "GLM/ext/matrix_transform.hpp"
 #include "ImGui/imgui.h"
 #include "World/Components/Transform.hpp"
+
 #include <Termina/World/Actor.hpp>
+#include <Termina/World/World.hpp>
 
 namespace Termina {
+    CameraComponent::~CameraComponent()
+    {
+        m_Owner->GetParentWorld()->SetMainCamera(nullptr);
+    }
+
     void CameraComponent::OnUpdate(float deltaTime)
     {
         Transform& transform = GetOwner()->GetComponent<Transform>();
@@ -14,7 +21,15 @@ namespace Termina {
         m_Camera.Direction = transform.GetForward();
 
         m_Camera.Projection = glm::perspective(glm::radians(m_FOV), 16.0f / 9.0f, m_Camera.Near, m_Camera.Far);
-        m_Camera.View = glm::lookAt(transform.GetPosition(), transform.GetPosition() + transform.GetForward(), transform.GetUp());
+        m_Camera.Projection[1][1] *= -1;
+        m_Camera.View = glm::inverse(transform.GetWorldMatrix());
+        m_Camera.ViewProjection = m_Camera.Projection * m_Camera.View;
+    }
+
+    void CameraComponent::OnPreUpdate(float deltaTime)
+    {
+        if (m_Primary)
+            m_Owner->GetParentWorld()->SetMainCamera(m_Owner);
     }
 
     void CameraComponent::OnPostRender(float deltaTime)

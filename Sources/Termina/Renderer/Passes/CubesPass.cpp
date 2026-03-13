@@ -1,6 +1,7 @@
 #include "CubesPass.hpp"
 #include "RHI/Device.hpp"
 #include "RHI/RenderContext.hpp"
+#include "Renderer/Components/CameraComponent.hpp"
 
 #include <Termina/Core/Application.hpp>
 #include <Termina/Renderer/Renderer.hpp>
@@ -68,6 +69,7 @@ namespace Termina {
         re->SetViewport(0.0f, 0.0f, static_cast<float>(info.Width), static_cast<float>(info.Height));
         re->SetScissorRect(0.0f, 0.0f, static_cast<float>(info.Width), static_cast<float>(info.Height));
         for (auto& entity : info.CurrentWorld->GetActors()) {
+            if (entity->HasComponent<CameraComponent>()) continue;
             glm::mat4 transform = info.CurrentCamera.ViewProjection * entity->GetComponent<Transform>().GetWorldMatrix();
             re->SetConstants(sizeof(glm::mat4), &transform);
             re->Draw(36, 1, 0, 0);
