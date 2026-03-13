@@ -3,14 +3,14 @@
 #include <Termina/RHI/ComputeEncoder.hpp>
 
 #include <Metal/Metal.h>
+#include "MetalRenderContext.hpp"
 
 namespace Termina {
-    class MetalRenderContext;
 
     class MetalComputeEncoder : public ComputeEncoder
     {
     public:
-        MetalComputeEncoder(MetalRenderContext* ctx, const std::string& name);
+        MetalComputeEncoder(MetalRenderContext* ctx, const std::string& name, ContextToEncoder&& ctxToEnc);
         ~MetalComputeEncoder();
 
         void SetPipeline(Pipeline* pipeline) override;

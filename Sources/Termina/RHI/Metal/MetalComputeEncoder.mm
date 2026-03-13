@@ -2,21 +2,60 @@
 #include "MetalRenderContext.hpp"
 #include "MetalComputePipeline.hpp"
 #include "MetalDevice.hpp"
+#include "MetalTexture.hpp"
+#include "MetalBuffer.hpp"
 
 #include <Termina/Core/Logger.hpp>
 #include <MetalShaderConverter/metal_irconverter_runtime.h>
 
 namespace Termina {
-    MetalComputeEncoder::MetalComputeEncoder(MetalRenderContext* ctx, const std::string& name)
+    MetalComputeEncoder::MetalComputeEncoder(MetalRenderContext* ctx, const std::string& name, ContextToEncoder&& ctxToEnc)
         : m_ParentCtx(ctx)
     {
+        // Create the compute encoder as usual
         m_CommandEncoder = [m_ParentCtx->GetCommandBuffer() computeCommandEncoder];
         m_CommandEncoder.label = [NSString stringWithUTF8String:name.c_str()];
+
+        // Wait on the provided fence (if any) so previously flushed work is visible.
+        if (ctxToEnc.Fence) {
+            [m_CommandEncoder waitForFence:ctxToEnc.Fence];
+        }
+
+        // Collect textures referenced by the context snapshot and issue barriers on this encoder.
+        std::vector<id<MTLTexture>> textures;
+        textures.reserve(ctxToEnc.TextureBarriers.size());
+        for (const auto& tb : ctxToEnc.TextureBarriers) {
+            if (tb.TargetTexture) {
+                MetalTexture* mt = reinterpret_cast<MetalTexture*>(tb.TargetTexture);
+                if (mt && mt->GetTexture()) textures.push_back(mt->GetTexture());
+            }
+        }
+        if (!textures.empty()) {
+            [m_CommandEncoder memoryBarrierWithResources:textures.data() count:textures.size()];
+        }
+
+        // Collect buffers referenced by the context snapshot and issue barriers on this encoder.
+        std::vector<id<MTLBuffer>> buffers;
+        buffers.reserve(ctxToEnc.BufferBarriers.size());
+        for (const auto& bb : ctxToEnc.BufferBarriers) {
+            if (bb.TargetBuffer) {
+                MetalBuffer* mb = reinterpret_cast<MetalBuffer*>(bb.TargetBuffer);
+                if (mb && mb->GetBuffer()) buffers.push_back(mb->GetBuffer());
+            }
+        }
+        if (!buffers.empty()) {
+            [m_CommandEncoder memoryBarrierWithResources:buffers.data() count:buffers.size()];
+        }
+
+        // Do NOT update the fence here; End() will update the context fence to mark this encoder's work as complete.
     }
 
     MetalComputeEncoder::~MetalComputeEncoder()
     {
-        [m_CommandEncoder endEncoding];
+        // Destructor intentionally does not update the context fence. End()
+        // is responsible for updating the fence and ending the encoding. The
+        // destructor is left empty to avoid double-ending encoders when End()
+        // is called by the owner and then delete is invoked.
     }
 
     void MetalComputeEncoder::SetPipeline(Pipeline* pipeline)
@@ -54,6 +93,11 @@ namespace Termina {
 
     void MetalComputeEncoder::End()
     {
+        // Update the context fence to mark this encoder's work as complete before ending.
+        id<MTLFence> fence = m_ParentCtx->GetFence();
+        if (fence) {
+            [m_CommandEncoder updateFence:fence];
+        }
         [m_CommandEncoder endEncoding];
     }
 } // namespace Termina

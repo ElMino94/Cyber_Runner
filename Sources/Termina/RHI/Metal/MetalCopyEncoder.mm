@@ -4,10 +4,16 @@
 #include "MetalBuffer.hpp"
 
 namespace Termina {
-    MetalCopyEncoder::MetalCopyEncoder(MetalRenderContext* context, const std::string& name)
+    MetalCopyEncoder::MetalCopyEncoder(MetalRenderContext* context, const std::string& name, ContextToEncoder&& ctxToEnc)
     {
+        // keep reference to parent context (header already declares m_ParentCtx)
+        m_ParentCtx = context;
         m_Encoder = [context->GetCommandBuffer() blitCommandEncoder];
         m_Encoder.label = name.empty() ? @"Copy Pass" : [NSString stringWithUTF8String:name.c_str()];
+
+        // Note: MTLBlitCommandEncoder does not support memory barriers or fence operations.
+        // The provided barriers and fence are ignored since blit operations don't require
+        // explicit synchronization at the encoder level in Metal.
     }
 
     void MetalCopyEncoder::CopyBufferToBuffer(RendererBuffer* srcBuffer, uint64 srcOffset, RendererBuffer* dstBuffer, uint64 dstOffset, uint64 size)
@@ -143,6 +149,8 @@ namespace Termina {
 
     void MetalCopyEncoder::End()
     {
+        // Note: MTLBlitCommandEncoder does not support fence operations.
+        // No fence update is performed here.
         [m_Encoder endEncoding];
         delete this;
     }

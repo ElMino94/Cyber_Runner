@@ -8,11 +8,13 @@ Termina is a game engine made in about a week.
 
 - Vulkan/Metal rendering
 - macOS/Windows/Linux support
-- Audio system
+- Audio system with spatialization
 - Input system (keyboard, mouse, gamepad)
 - C++ scripting with hot-reload
 - Shader hot reload
 - Actor model and world serialization/deserialization
+- Asset system
+- Fully fledged editor
 
 ## Dependencies
 

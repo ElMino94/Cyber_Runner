@@ -4,12 +4,13 @@
 #include "MetalBuffer.hpp"
 #include "MetalRenderPipeline.hpp"
 #include "MetalDevice.hpp"
+#include "MetalTexture.hpp"
 
 #include <Termina/Core/Logger.hpp>
 #include <MetalShaderConverter/metal_irconverter_runtime.h>
 
 namespace Termina {
-    MetalRenderEncoder::MetalRenderEncoder(MetalRenderContext* ctx, const RenderEncoderInfo& info)
+    MetalRenderEncoder::MetalRenderEncoder(MetalRenderContext* ctx, const RenderEncoderInfo& info, ContextToEncoder&& ctxToEnc)
         : m_ParentCtx(ctx)
     {
         MTLRenderPassDescriptor* descriptor = [MTLRenderPassDescriptor renderPassDescriptor];
@@ -28,8 +29,49 @@ namespace Termina {
         descriptor.renderTargetWidth = info.Width;
         descriptor.renderTargetHeight = info.Height;
 
+        // Create the render encoder as usual
         m_Encoder = [ctx->GetCommandBuffer() renderCommandEncoderWithDescriptor:descriptor];
         m_Encoder.label = info.Name.empty() ? @"Render Pass" : [NSString stringWithUTF8String:info.Name.c_str()];
+
+        // Flush the context-provided barriers inside this encoder (no transient encoder).
+        // Wait on the fence first so any previously submitted work is respected.
+        id<MTLFence> fence = ctxToEnc.Fence;
+        if (fence) {
+            [m_Encoder waitForFence:fence beforeStages:MTLRenderStageVertex | MTLRenderStageFragment | MTLRenderStageMesh];
+        }
+
+        // Collect textures referenced by the snapshot texture barriers and issue memory barrier.
+        std::vector<id<MTLTexture>> textures;
+        textures.reserve(ctxToEnc.TextureBarriers.size());
+        for (const auto& tb : ctxToEnc.TextureBarriers) {
+            if (tb.TargetTexture) {
+                MetalTexture* mt = reinterpret_cast<MetalTexture*>(tb.TargetTexture);
+                if (mt->GetTexture()) textures.push_back(mt->GetTexture());
+            }
+        }
+        if (!textures.empty()) {
+            [m_Encoder memoryBarrierWithResources:textures.data() count:textures.size()
+                                      afterStages:MTLRenderStageVertex | MTLRenderStageMesh
+                                     beforeStages:MTLRenderStageVertex | MTLRenderStageFragment | MTLRenderStageMesh];
+        }
+
+        // Collect buffers referenced by the snapshot buffer barriers and issue memory barrier.
+        std::vector<id<MTLBuffer>> buffers;
+        buffers.reserve(ctxToEnc.BufferBarriers.size());
+        for (const auto& bb : ctxToEnc.BufferBarriers) {
+            if (bb.TargetBuffer) {
+                MetalBuffer* mb = reinterpret_cast<MetalBuffer*>(bb.TargetBuffer);
+                if (mb->GetBuffer()) buffers.push_back(mb->GetBuffer());
+            }
+        }
+        if (!buffers.empty()) {
+            [m_Encoder memoryBarrierWithResources:buffers.data() count:buffers.size()
+                                      afterStages:MTLRenderStageVertex | MTLRenderStageMesh
+                                     beforeStages:MTLRenderStageVertex | MTLRenderStageFragment | MTLRenderStageMesh];
+        }
+
+        // Note: we do not update the fence here — the encoder's End() will update the context fence
+        // once this encoder's work is complete, matching the pattern used elsewhere.
     }
 
     void MetalRenderEncoder::SetViewport(float x, float y, float width, float height)
@@ -137,6 +179,11 @@ namespace Termina {
 
     void MetalRenderEncoder::End()
     {
+        // Update the context fence to mark the work of this encoder as complete so
+        // subsequent encoders can wait on it and observe correct memory/state.
+        if (m_ParentCtx->GetFence()) {
+            [m_Encoder updateFence:m_ParentCtx->GetFence() afterStages:MTLRenderStageVertex | MTLRenderStageFragment | MTLRenderStageMesh];
+        }
         [m_Encoder endEncoding];
         delete this;
     }

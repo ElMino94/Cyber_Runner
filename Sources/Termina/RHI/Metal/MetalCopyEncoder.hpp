@@ -4,13 +4,16 @@
 
 #include <Metal/Metal.h>
 
-namespace Termina {
-    class MetalRenderContext;
+#include "MetalRenderContext.hpp"
 
+namespace Termina {
+    // MetalRenderContext is included above; use the concrete ContextToEncoder type
+    // defined in that header rather than a forward-declaration.
+    
     class MetalCopyEncoder : public CopyEncoder
     {
     public:
-        MetalCopyEncoder(MetalRenderContext* context, const std::string& name = "Copy Pass");
+        MetalCopyEncoder(MetalRenderContext* context, const std::string& name, ContextToEncoder&& ctxToEnc);
         ~MetalCopyEncoder() override = default;
 
         void CopyBufferToBuffer(RendererBuffer* srcBuffer, uint64 srcOffset,
@@ -33,6 +36,7 @@ namespace Termina {
         void End() override;
 
     private:
+        MetalRenderContext* m_ParentCtx;
         id<MTLBlitCommandEncoder> m_Encoder;
     };
 } // namespace Termina

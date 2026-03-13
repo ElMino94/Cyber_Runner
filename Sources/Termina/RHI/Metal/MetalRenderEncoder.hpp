@@ -3,16 +3,21 @@
 #include <Termina/RHI/RenderContext.hpp>
 #include <Termina/RHI/RenderEncoder.hpp>
 
+#include "MetalRenderContext.hpp"
+
 #include <Metal/Metal.h>
+#include "MetalRenderContext.hpp"
 
 namespace Termina {
-    class MetalRenderContext;
     class MetalBuffer;
 
+    // Metal render encoder that receives a snapshot of context barriers/fence
+    // via a ContextToEncoder instance so it can flush those barriers at the
+    // start of its encoding scope (no transient encoders created by context).
     class MetalRenderEncoder : public RenderEncoder
     {
     public:
-        MetalRenderEncoder(MetalRenderContext* ctx, const RenderEncoderInfo& info);
+        MetalRenderEncoder(MetalRenderContext* ctx, const RenderEncoderInfo& info, ContextToEncoder&& ctxToEnc);
 
         void SetViewport(float x, float y, float width, float height) override;
         void SetScissorRect(int left, int top, int right, int bottom) override;
