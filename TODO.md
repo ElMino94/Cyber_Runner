@@ -28,6 +28,8 @@
 ### Saturday
 - Physics system (implement different types of colliders)
 - Project system
+- Scene transition API
+- Spawn from Prefab API
 - Asset compression and packing on export
 - First release of the engine to a standalone executable
 
@@ -40,6 +42,9 @@
 - TAA
 - Bloom
 - Shadow atlas
+
+## Monday
+- Walk around demo, change levels, pick up item, scripted particle system
 
 ## After
 - Vulkan and Metal TLAS/BLAS Build
