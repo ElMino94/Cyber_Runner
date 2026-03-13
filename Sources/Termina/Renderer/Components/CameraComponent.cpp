@@ -6,6 +6,8 @@
 
 #include <Termina/World/Actor.hpp>
 #include <Termina/World/World.hpp>
+#include <Termina/Core/Application.hpp>
+#include <Termina/Core/Window.hpp>
 
 namespace Termina {
     CameraComponent::~CameraComponent()
@@ -20,7 +22,12 @@ namespace Termina {
         m_Camera.Position = transform.GetPosition();
         m_Camera.Direction = transform.GetForward();
 
-        m_Camera.Projection = glm::perspective(glm::radians(m_FOV), 16.0f / 9.0f, m_Camera.Near, m_Camera.Far);
+        float aspectRatio = 16.0f / 9.0f;
+        auto* window = Application::Get().GetWindow();
+        if (window && window->GetHeight() > 0)
+            aspectRatio = static_cast<float>(window->GetWidth()) / static_cast<float>(window->GetHeight());
+
+        m_Camera.Projection = glm::perspective(glm::radians(m_FOV), aspectRatio, m_Camera.Near, m_Camera.Far);
         m_Camera.Projection[1][1] *= -1;
         m_Camera.View = glm::lookAt(m_Camera.Position, m_Camera.Position + m_Camera.Direction, glm::vec3(0.0f, 1.0f, 0.0f));
         m_Camera.ViewProjection = m_Camera.Projection * m_Camera.View;

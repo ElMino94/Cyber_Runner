@@ -16,6 +16,7 @@
 #include "Termina/Audio/AudioSystem.hpp"
 #include "Termina/Core/SystemManager.hpp"
 #include "Termina/Input/InputSystem.hpp"
+#include "Termina/Physics/PhysicsSystem.hpp"
 #include "Termina/Platform/FileDialog.hpp"
 #include "Termina/Platform/LaunchProcess.hpp"
 #include "Termina/Scripting/ScriptSystem.hpp"
@@ -33,6 +34,7 @@ EditorApplication::EditorApplication()
     m_SystemManager.AddSystem<Termina::AudioSystem>();
     m_SystemManager.AddSystem<Termina::ScriptSystem>();
     m_SystemManager.AddSystem<Termina::AssetSystem>();
+    m_SystemManager.AddSystem<Termina::PhysicsSystem>();
 
     RegisterPanel<ViewportPanel>();
     RegisterPanel<WorldHierarchyPanel>();

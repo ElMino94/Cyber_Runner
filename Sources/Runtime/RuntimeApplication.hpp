@@ -8,5 +8,5 @@ public:
     RuntimeApplication();
     ~RuntimeApplication() = default;
 
-    void OnUpdate(float dt) override;
+    void OnPreUpdate(float dt) override;
 };

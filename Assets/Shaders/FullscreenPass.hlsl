@@ -15,6 +15,8 @@ struct PushConstants
 {
     int SamplerIndex;
     int TextureIndex;
+    int ReverseUV;
+    int Padding;
 };
 PUSH_CONSTANTS(PushConstants);
 
@@ -25,7 +27,7 @@ PixelInput VSMain(uint VertexID : SV_VertexID)
 
     PixelInput output;
     output.Position = float4(uv * 2.0f - 1.0f, 0.0f, 1.0f);
-    output.UV = float2(uv.x, uv.y);
+    output.UV = float2(uv.x, PUSH.ReverseUV ? 1.0f - uv.y : uv.y);
     return output;
 }
 

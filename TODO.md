@@ -25,15 +25,10 @@
 
 ## TODO
 
-### Friday
-- Simple HDR forward pass + tonemap via PassIO + debug renderer
-- Physics system (implement different types of colliders)
-
 ### Saturday
+- Physics system (implement different types of colliders)
 - Project system
 - Asset compression and packing on export
-- Runtime renders to backbuffer
-- Prefabs
 - First release of the engine to a standalone executable
 
 ## Sunday
