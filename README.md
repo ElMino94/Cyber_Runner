@@ -2,9 +2,10 @@
 
 ![](.github/image.png)
 
-Termina is a game engine made in about a week.
+Termina is a game engine made in about a week (screenshot shows engine state deadline of March 16th 2026).
+Other features will be pushed depending on demand from the students using it.
 
-## Features
+## Features made in 5 days
 
 - Vulkan/Metal rendering
 - macOS/Windows/Linux support
