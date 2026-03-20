@@ -5,10 +5,12 @@
 #include "ParticleSystem.hpp"
 #include "PhysicsTestComponent.hpp"
 #include "RunnerPlayerComponent.hpp"
+#include "Procedural .hpp"
 
 COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(FlyCamComponent, "Fly Cam Component")
     REGISTER_COMPONENT(ParticleSystemComponent, "Particle System")
     REGISTER_COMPONENT(PhysicsTestComponent, "Physics Test")
     REGISTER_COMPONENT(RunnerPlayerComponent, "Runner Player Component")
+    REGISTER_COMPONENT(Procedural, "Procedural script")
 COMPONENT_MODULE_END()
