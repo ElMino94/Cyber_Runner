@@ -34,13 +34,13 @@ void RunnerPlayerComponent::HandleInput()
     if (TerminaScript::Input::IsKeyPressed(Termina::Key::A) ||
         TerminaScript::Input::IsKeyPressed(Termina::Key::Left))
     {
-        m_CurrentLane = std::max(-1, m_CurrentLane - 1);
+        m_CurrentLane = (std::max)(-1, m_CurrentLane - 1);
     }
 
     if (TerminaScript::Input::IsKeyPressed(Termina::Key::D) ||
         TerminaScript::Input::IsKeyPressed(Termina::Key::Right))
     {
-        m_CurrentLane = std::min(1, m_CurrentLane + 1);
+        m_CurrentLane = (std::min)(1, m_CurrentLane + 1);
     }
 
     if (m_IsGrounded &&
