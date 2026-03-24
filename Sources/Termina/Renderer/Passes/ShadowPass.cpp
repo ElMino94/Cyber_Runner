@@ -105,7 +105,15 @@ namespace Termina {
         }
 
         if (tlasInstances.empty())
+        {
+            // Ensure the shadow mask is in READ_ONLY so DeferredPass can sample it.
+            info.Ctx->Barrier(TextureBarrier()
+                .SetTargetTexture(m_ShadowMask)
+                .SetNewLayout(TextureLayout::READ_ONLY)
+                .SetDstAccess(ResourceAccess::SHADER_READ)
+                .SetDstStage(PipelineStage::COMPUTE_SHADER));
             return;
+        }
 
         // -----------------------------------------------------------------------
         // Build TLAS (barrier: AS build write → compute read)
@@ -229,7 +237,7 @@ namespace Termina {
             .SetTargetTexture(m_ShadowMask)
             .SetNewLayout(TextureLayout::READ_ONLY)
             .SetDstAccess(ResourceAccess::SHADER_READ)
-            .SetDstStage(PipelineStage::ALL_GRAPHICS));
+            .SetDstStage(PipelineStage::COMPUTE_SHADER));
     }
 
 } // namespace Termina

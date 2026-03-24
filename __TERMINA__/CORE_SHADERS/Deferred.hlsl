@@ -1,6 +1,8 @@
 // Deferred.hlsl — fullscreen PBR lighting pass (compute).
 // Reads GBuffer textures, evaluates all submitted lights, outputs HDR color.
+// When TLASIndex >= 0, traces inline shadow rays for directional lights.
 
+#define RAYTRACING 1
 #include "Common/Bindless.hlsli"
 #include "Common/Lighting.hlsli"
 
@@ -20,7 +22,7 @@ struct PushConstants
     float3          CameraPos;
     int             Width;
     int             Height;
-    int             ShadowMaskIndex; // -1 if no RT shadow pass
+    int             TLASIndex;          // -1 if no raytracing
 };
 PUSH_CONSTANTS(PushConstants);
 
@@ -72,18 +74,36 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     // --- Accumulate light contributions ---
     float3 Lo = float3(0.0f, 0.0f, 0.0f);
 
-    float shadowFactor = 1.0f;
-    if (PUSH.ShadowMaskIndex >= 0)
-    {
-        Texture2D<float> shadowMask = ResourceDescriptorHeap[PUSH.ShadowMaskIndex];
-        shadowFactor = shadowMask[id.xy];
-    }
-
     if (PUSH.LightCount > 0) {
         StructuredBuffer<GPULight> lights = ResourceDescriptorHeap[PUSH.LightBufferIndex];
         for (int i = 0; i < PUSH.LightCount; ++i)
         {
-            float sf = (lights[i].Type == 0) ? shadowFactor : 1.0f;
+            float sf = 1.0f;
+
+            if (lights[i].Type == 0 && PUSH.TLASIndex >= 0) // directional + RT available
+            {
+                float3 L = normalize(-lights[i].Direction);
+                if (dot(N, L) <= 0.0f)
+                {
+                    sf = 0.0f;
+                }
+                else
+                {
+                    RaytracingAccelerationStructure tlas = GetAccelerationStructure(PUSH.TLASIndex);
+                    RayDesc ray;
+                    ray.Origin    = worldPos + N * 0.01f;
+                    ray.Direction = L;
+                    ray.TMin      = 0.001f;
+                    ray.TMax      = 1000.0f;
+
+                    RayQuery<RAY_FLAG_FORCE_OPAQUE | RAY_FLAG_ACCEPT_FIRST_HIT_AND_END_SEARCH> rq;
+                    rq.TraceRayInline(tlas, 0, 1, ray);
+                    rq.Proceed();
+
+                    sf = (rq.CommittedStatus() == COMMITTED_TRIANGLE_HIT) ? 0.0f : 1.0f;
+                }
+            }
+
             Lo += EvaluateLight(lights[i], worldPos, N, V, albedo, roughness, metallic, sf);
         }
     }

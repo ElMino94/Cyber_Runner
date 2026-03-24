@@ -7,6 +7,7 @@
 #include <Jolt/Physics/Body/MassProperties.h>
 #include <Jolt/Physics/Body/MotionProperties.h>
 #include <Jolt/Physics/Body/AllowedDOFs.h>
+#include <Jolt/Physics/Collision/Shape/ScaledShape.h>
 
 #include <Termina/Core/Application.hpp>
 #include <Termina/Core/Logger.hpp>
@@ -77,6 +78,18 @@ namespace Termina {
         }
 
         auto& transform = m_Owner->GetComponent<Transform>();
+
+        // Apply world-space scale to the physics shape so colliders match the
+        // visual size of scaled actors.
+        glm::vec3 s = transform.GetScale();
+        if (s.x != 1.0f || s.y != 1.0f || s.z != 1.0f)
+        {
+            JPH::ScaledShapeSettings scaled(shape, JPH::Vec3(s.x, s.y, s.z));
+            auto res = scaled.Create();
+            if (res.IsValid())
+                shape = res.Get();
+        }
+
         glm::vec3 pos = transform.GetPosition();
         glm::quat rot = transform.GetRotation();
 

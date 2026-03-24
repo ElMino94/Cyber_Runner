@@ -13,6 +13,8 @@ namespace Termina {
     {
         for (auto [_, system] : m_Subsystems) {
             system->UnregisterComponents();
+        }
+        for (auto [_, system] : m_Subsystems) {
             delete system;
         }
         m_Subsystems.clear();

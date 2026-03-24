@@ -49,6 +49,19 @@ namespace Termina {
 
     bool WorldSystem::LoadWorld(const std::string& path)
     {
+        // Destroy the old world first so its actors release their IDs before
+        // LoadFromFile calls IDGenerator::Clear().
+        if (m_CurrentWorld)
+        {
+            if (m_IsPlaying)
+            {
+                m_CurrentWorld->OnStop();
+                m_IsPlaying = false;
+            }
+            m_CurrentWorld->OnShutdown();
+            m_CurrentWorld.reset();
+        }
+
         auto candidate = std::make_unique<World>();
         try
         {
@@ -56,11 +69,10 @@ namespace Termina {
         }
         catch (const std::exception&)
         {
-            // Leave the current world intact.
             return false;
         }
 
-        TransitionTo(std::move(candidate));
+        m_CurrentWorld = std::move(candidate);
         return true;
     }
 
@@ -103,10 +115,14 @@ namespace Termina {
         // Restore the world to its pre-play state.
         if (!m_PlaySnapshot.empty() && std::filesystem::exists(m_PlaySnapshot))
         {
+            // Destroy the play world BEFORE loading the snapshot so that
+            // Actor::~Actor() releases IDs before LoadFromFile calls IDGenerator::Clear().
+            m_CurrentWorld->OnShutdown();
+            m_CurrentWorld.reset();
+
             auto restored = std::make_unique<World>();
             restored->LoadFromFile(m_PlaySnapshot);
             restored->SetCurrentPath(m_PrePlayPath);
-            m_CurrentWorld->OnShutdown();
             m_CurrentWorld = std::move(restored);
             // LoadFromFile already ran OnInit (Pass 3) — no second call needed.
             std::filesystem::remove(m_PlaySnapshot);
@@ -133,6 +149,16 @@ namespace Termina {
             std::string path = std::move(m_PendingScene);
             m_PendingScene.clear();
 
+            // Destroy the current world first so actors release IDs before
+            // LoadFromFile calls IDGenerator::Clear().
+            if (m_CurrentWorld)
+            {
+                m_CurrentWorld->OnStop();
+                m_CurrentWorld->OnShutdown();
+                m_CurrentWorld.reset();
+            }
+            m_IsPlaying = false;
+
             auto candidate = std::make_unique<World>();
             bool loaded = false;
             try
@@ -144,7 +170,7 @@ namespace Termina {
 
             if (loaded)
             {
-                TransitionTo(std::move(candidate));
+                m_CurrentWorld = std::move(candidate);
                 // LoadFromFile already ran OnInit (Pass 3) — no second call needed.
                 m_IsPlaying = true;
                 m_CurrentWorld->OnPlay();

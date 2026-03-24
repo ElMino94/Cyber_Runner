@@ -1,6 +1,8 @@
 #include "ScriptModuleManager.hpp"
 
+#include <Termina/Core/Application.hpp>
 #include <Termina/Core/Logger.hpp>
+#include <Termina/Renderer/Renderer.hpp>
 #include <Termina/World/ComponentRegistry.hpp>
 #include <Termina/World/World.hpp>
 
@@ -11,6 +13,18 @@ namespace Termina {
     {
         static ScriptModuleManager instance;
         return instance;
+    }
+
+    static void PropagateImGuiContext(DLL* dll)
+    {
+        void* sym = dll->GetSymbol("SetImGuiContext");
+        if (!sym) return;
+        auto* renderer = Application::GetSystem<RendererSystem>();
+        if (!renderer) return;
+        void* ctx = renderer->GetImGuiContext();
+        void* af = nullptr, *ff = nullptr, *ud = nullptr;
+        renderer->GetImGuiAllocator(&af, &ff, &ud);
+        reinterpret_cast<void(*)(void*, void*, void*, void*)>(sym)(ctx, af, ff, ud);
     }
 
     bool ScriptModuleManager::Load(const std::string& name, const std::string& path)
@@ -32,6 +46,7 @@ namespace Termina {
         }
 
         reinterpret_cast<void(*)()>(regSym)();
+        PropagateImGuiContext(dll.get());
 
         std::vector<std::string> names;
         void* namesSym = dll->GetSymbol("GetComponentNames");
@@ -110,6 +125,7 @@ namespace Termina {
             return;
         }
         reinterpret_cast<void(*)()>(regSym)();
+        PropagateImGuiContext(newDll.get());
 
         std::vector<std::string> newNames;
         void* namesSym = newDll->GetSymbol("GetComponentNames");

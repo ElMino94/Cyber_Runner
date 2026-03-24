@@ -1,11 +1,14 @@
 #include "DeferredPass.hpp"
 
 #include <Termina/Core/Application.hpp>
+#include <Termina/Asset/Model/ModelAsset.hpp>
 #include <Termina/Renderer/Renderer.hpp>
 #include <Termina/Renderer/GPULight.hpp>
+#include <Termina/Renderer/Components/MeshComponent.hpp>
 #include <Termina/Shader/ShaderManager.hpp>
 #include <Termina/Shader/ShaderServer.hpp>
 #include "RHI/TextureView.hpp"
+#include <World/Components/Transform.hpp>
 
 #include <GLM/glm.hpp>
 #include <algorithm>
@@ -36,6 +39,16 @@ namespace Termina {
             .SetBuffer(m_LightBuffer)
             .SetType(BufferViewType::SHADER_READ));
 
+        if (device->SupportsRaytracing())
+        {
+            m_TLAS = device->CreateTLAS(MAX_TLAS_INSTANCES);
+
+            m_TLASScratch = device->CreateBuffer(BufferDesc()
+                .SetSize(4 * 1024 * 1024)
+                .SetUsage(BufferUsage::ACCELERATION_STRUCTURE | BufferUsage::SHADER_WRITE));
+            m_TLASScratch->SetName("Deferred TLAS Scratch");
+        }
+
         ShaderServer& server = Application::GetSystem<ShaderManager>()->GetShaderServer();
         server.WatchPipeline("__TERMINA__/CORE_SHADERS/Deferred.hlsl", PipelineType::Compute);
     }
@@ -46,6 +59,8 @@ namespace Termina {
         delete m_LightBufView;
         delete m_LightBuffer;
         delete m_HDRTexture;
+        delete m_TLASScratch;
+        delete m_TLAS;
     }
 
     void DeferredPass::Resize(int32 width, int32 height)
@@ -65,6 +80,46 @@ namespace Termina {
                 std::min(static_cast<size_t>(MAX_LIGHTS), info.LightList->size()));
             std::memcpy(m_LightMapped, info.LightList->data(),
                         static_cast<size_t>(lightCount) * sizeof(GPULight));
+        }
+
+        // Build TLAS from scene meshes for inline shadow ray queries
+        int32 tlasIndex = -1;
+        if (m_TLAS && info.CurrentWorld)
+        {
+            std::vector<TLASInstanceDesc> tlasInstances;
+            tlasInstances.reserve(MAX_TLAS_INSTANCES);
+
+            uint32 instanceID = 0;
+            for (auto& actor : info.CurrentWorld->GetActors())
+            {
+                if (!actor->HasComponent<MeshComponent>()) continue;
+
+                auto& meshComp = actor->GetComponent<MeshComponent>();
+                ModelAsset* model = meshComp.Model.Get();
+                if (!model || !model->BLASObject) continue;
+
+                TLASInstanceDesc inst;
+                inst.BLASObject = model->BLASObject;
+                inst.Transform  = actor->GetComponent<Transform>().GetWorldMatrix();
+                inst.InstanceID = instanceID++;
+                inst.Mask       = 0xFF;
+                inst.Opaque     = true;
+
+                tlasInstances.push_back(inst);
+                if (tlasInstances.size() >= MAX_TLAS_INSTANCES) break;
+            }
+
+            if (!tlasInstances.empty())
+            {
+                m_TLAS->Build(info.Ctx, tlasInstances, m_TLASScratch, 0);
+
+                info.Ctx->Barrier(BufferBarrier()
+                    .SetTargetBuffer(m_TLASScratch)
+                    .SetDstStage(PipelineStage::COMPUTE_SHADER)
+                    .SetDstAccess(ResourceAccess::ACCELERATION_STRUCTURE_READ));
+
+                tlasIndex = m_TLAS->GetBindlessIndex();
+            }
         }
 
         auto getSRV = [&](RendererTexture* tex) {
@@ -93,7 +148,7 @@ namespace Termina {
             glm::vec3   CameraPos;
             int32       Width;
             int32       Height;
-            int32       ShadowMaskIndex;
+            int32       TLASIndex;     // -1 if no raytracing
         };
 
         DeferredPushConstants pc;
@@ -109,14 +164,7 @@ namespace Termina {
         pc.CameraPos        = info.CurrentCamera.Position;
         pc.Width            = info.Width;
         pc.Height           = info.Height;
-        pc.ShadowMaskIndex  = -1;
-        if (info.IO->HasTexture("ShadowMask"))
-        {
-            RendererTexture* shadowMask = info.IO->GetTexture("ShadowMask");
-            TextureView* shadowSRV = info.ViewCache->GetTextureView(
-                TextureViewDesc::CreateDefault(shadowMask, TextureViewType::SHADER_READ, TextureViewDimension::TEXTURE_2D));
-            pc.ShadowMaskIndex = shadowSRV->GetBindlessIndex();
-        }
+        pc.TLASIndex        = tlasIndex;
 
         ComputeEncoder* ce = info.Ctx->CreateComputeEncoder("Deferred Pass");
         ce->SetPipeline(server.GetComputePipeline("__TERMINA__/CORE_SHADERS/Deferred.hlsl"));

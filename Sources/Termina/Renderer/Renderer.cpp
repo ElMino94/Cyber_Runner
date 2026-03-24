@@ -10,7 +10,6 @@
 #include "Renderer/Components/SpotLightComponent.hpp"
 #include "Renderer/Passes/CubesPass.hpp"
 #include "Renderer/Passes/GBufferPass.hpp"
-#include "Renderer/Passes/ShadowPass.hpp"
 #include "Renderer/Passes/DeferredPass.hpp"
 #include "Renderer/Passes/TonemapPass.hpp"
 #include "Renderer/Passes/ImGuiPass.hpp"
@@ -92,19 +91,28 @@ namespace Termina {
 
     void RendererSystem::Render(float deltaTime)
     {
-        if (m_Window->GetWidth() != m_CurrentWidth || m_Window->GetHeight() != m_CurrentHeight) {
-            m_Device->WaitIdle();
-            m_CurrentWidth = m_Window->GetWidth();
-            m_CurrentHeight = m_Window->GetHeight();
+        int32 newWidth  = m_Window->GetWidth();
+        int32 newHeight = m_Window->GetHeight();
 
-            m_Surface->Resize(m_Window->GetWidth(), m_Window->GetHeight());
-            for (auto& pass : m_RenderPasses) {
-                pass->Resize(m_CurrentWidth, m_CurrentHeight);
+        if (newWidth != m_CurrentWidth || newHeight != m_CurrentHeight) {
+            m_CurrentWidth  = newWidth;
+            m_CurrentHeight = newHeight;
+
+            if (newWidth > 0 && newHeight > 0) {
+                m_Device->WaitIdle();
+                m_Surface->Resize(newWidth, newHeight);
+                for (auto& pass : m_RenderPasses) {
+                    pass->Resize(newWidth, newHeight);
+                }
             }
         }
 
-        int32 pixelWidth = m_Window->GetPixelWidth();
+        int32 pixelWidth  = m_Window->GetPixelWidth();
         int32 pixelHeight = m_Window->GetPixelHeight();
+
+        // Skip rendering while minimized
+        if (pixelWidth == 0 || pixelHeight == 0)
+            return;
 
         uint32 frameIndex = m_Surface->GetFrameIndex();
 
@@ -163,7 +171,6 @@ namespace Termina {
     {
         m_RenderPasses = {
             new GBufferPass(),
-            new ShadowPass(),
             new DeferredPass(),
             new SkyPass(),
             new TonemapPass(),
