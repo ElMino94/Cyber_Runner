@@ -1,0 +1,16 @@
+{
+  "albedo_texture": "Assets\\Models\\Barricade\\Material__219_baseColor.jpeg",
+  "alpha_test": false,
+  "color": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "emissive_texture": "Assets\\Models\\Barricade\\Material__219_emissive.jpeg",
+  "metallic_factor": 1.0,
+  "normal_texture": "Assets\\Models\\Barricade\\Material__219_normal.png",
+  "orm_texture": "Assets\\Models\\Barricade\\Material__219_metallicRoughness.png",
+  "override_metallic": false,
+  "override_roughness": false,
+  "roughness_factor": 1.0
+}

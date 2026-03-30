@@ -1,0 +1,45 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            2.856722116470337,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Wall\\scene_mat0.mat"
+                        },
+                        "model": "Assets\\Models\\Wall\\scene.gltf"
+                    },
+                    "type": "Mesh Component"
+                }
+            ],
+            "id": "1521659068550638630",
+            "name": "Wall",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}
