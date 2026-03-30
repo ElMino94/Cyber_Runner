@@ -5,7 +5,6 @@ void Procedural::Start()
 {
 	TerminaScript::ScriptableComponent::Start();
 	// Génération initiale des objets pour remplir le niveau
-	procéduralGeneration();
 }
 
 void Procedural::Update(float dt)
@@ -24,7 +23,11 @@ void Procedural::ObjectsUpdate(float dt)
 	// Fait avancer chaque objet de +1 par dt 
 	for (auto& obj : m_Objects)
 	{
-		m_Transform->SetPosition(m_Transform->GetPosition() + glm::vec3(0.0f, 1.0f * dt, 0.0f));
+		if (obj && obj->HasComponent<Termina::Transform>())
+		{
+			Termina::Transform& transform = obj->GetComponent<Termina::Transform>();
+			transform.SetPosition(transform.GetPosition() + glm::vec3(0.0f, 1.0f * dt, 0.0f));
+		}
 	}
 }
 
@@ -38,14 +41,13 @@ void Procedural::procéduralGeneration()
 		for (int i = 0; i < objectsToSpawn; ++i)
 		{
 			// Instantiate() sans paramètre crée un acteur vide
-			Termina::Actor* newObj = Instantiate();
+			Termina::Actor* newObj = Instantiate(Wall);
 			
 			// Récupère le composant Transform et configure la position
-			Termina::Transform* transform = nullptr;
 			if (newObj && newObj->HasComponent<Termina::Transform>())
 			{
-				transform = &newObj->GetComponent<Termina::Transform>();
-				transform->SetLocalPosition(glm::vec3(0.0f, -5.0f, 0.0f));
+				Termina::Transform& transform = newObj->GetComponent<Termina::Transform>();
+				transform.SetLocalPosition(glm::vec3(0.0f, -5.0f, 0.0f));
 			}
 			
 			m_Objects.push_back(newObj);
