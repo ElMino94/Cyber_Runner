@@ -38,6 +38,8 @@ private:
     bool  m_IsGrounded = true;
     bool  m_IsDead = false;
 
+    int m_Score = 0;
+
     glm::vec3 m_StartPosition = glm::vec3(0.0f);
 
 };

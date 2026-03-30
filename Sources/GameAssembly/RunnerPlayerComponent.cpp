@@ -1,4 +1,5 @@
 #include "RunnerPlayerComponent.hpp"
+#include "CollectibleComponent.hpp"
 
 #include <ImGui/imgui.h>
 #include <Termina/Core/Logger.hpp>
@@ -106,10 +107,24 @@ void RunnerPlayerComponent::OnCollisionEnter(Termina::Actor* other)
     if (!other)
         return;
 
-    TN_WARN("Player collided with '%s'", other->GetName().c_str());
+    TN_INFO("Collision detected with %s", other->GetName().c_str());
 
-    // Pour le moment, toute collision = mort.
-    // Plus tard on filtrera selon le nom/tag/type d'obstacle.
+    if (other->HasComponent<Collectibles>())
+    {
+        auto& collectible = other->GetComponent<Collectibles>();
+
+        if (!collectible.IsCollected())
+        {
+            collectible.Collect();
+
+            m_Score += collectible.value;
+
+            Destroy(other);
+        }
+
+        return;
+    }
+
     KillPlayer();
 }
 
