@@ -1,0 +1,60 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            1.0551164150238037,
+                            1.3826555013656616
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "intensity": 1.0,
+                        "range": 10.0
+                    },
+                    "type": "Point Light"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "color": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "intensity": 1.0
+                    },
+                    "type": "Directional Light"
+                }
+            ],
+            "id": "8682965435409562521",
+            "name": "Car",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}

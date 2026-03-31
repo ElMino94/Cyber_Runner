@@ -1,0 +1,16 @@
+{
+  "albedo_texture": "Assets\\Models\\Fcar\\Placeable_baseColor.png",
+  "alpha_test": false,
+  "color": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "emissive_texture": "Assets\\Models\\Fcar\\Placeable_emissive.png",
+  "metallic_factor": 1.0,
+  "normal_texture": "",
+  "orm_texture": "Assets\\Models\\Fcar\\Placeable_metallicRoughness.png",
+  "override_metallic": false,
+  "override_roughness": false,
+  "roughness_factor": 1.0
+}
