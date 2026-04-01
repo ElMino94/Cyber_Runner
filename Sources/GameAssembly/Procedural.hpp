@@ -9,23 +9,26 @@ using namespace TerminaScript;
 class Procedural : public TerminaScript::ScriptableComponent
 {
 private:
-	// Paramètres de génération
-	int m_MaxObjects = 15;
-	float m_ObjectsSpeed = 5.0f;
-	float m_LaneWidth = 1.5f;
-	float m_SpacingBetweenPatterns = 2.5f;
+	// === PARAMÈTRES DE GÉNÉRATION ===
+	int m_MaxObjects = 30;                    // Augmenté pour meilleure densité
+	float m_LaneWidth = 2.0f;                 // Augmenté de 1.5 à 2.0 pour plus d'espace
+	float m_SpacingBetweenPatterns = 4.5f;    // Augmenté de 2.5 à 3.5 pour éviter collisions
+	float m_DestroyDistance = 20.0f;          // Augmenté de 30 à 40 pour plus de visibilité
 
-	// Prefabs
+	// === PREFABS ===
 	TerminaScript::Prefab m_WallPrefab;
 	TerminaScript::Prefab m_BarricadePrefab;
 	TerminaScript::Prefab m_CarPrefab;
 
-	// Générateur aléatoire
+	// === RÉFÉRENCES ===
+	Termina::Actor* m_PlayerActor = nullptr;
+
+	// === GÉNÉRATEUR ALÉATOIRE ===
 	std::mt19937 m_RandomEngine;
 	int m_LastPatternIndex = -1;
-	float m_NextSpawnHeight = 0.0f;
+	float m_NextSpawnZ = 0.0f;
 
-	// Types de patterns
+	// === TYPES DE PATTERNS ===
 	enum PatternType
 	{
 		PATTERN_EMPTY,           // Espace vide
@@ -36,16 +39,16 @@ private:
 		PATTERN_GAP_RIGHT,       // Trou à droite
 		PATTERN_GAP_CENTER,      // Trou au centre
 		PATTERN_NARROW_GAP,      // Passage étroit
-		PATTERN_BARRICADE_WALL,  // Barricades
+		PATTERN_BARRICADE_WALL,  // Mur de barricades
 		PATTERN_CAR_OBSTACLE,    // Voiture
 		PATTERN_COUNT
 	};
 
-	// Structure pour un pattern
+	// === STRUCTURE PATTERN ===
 	struct PatternLine
 	{
-		std::vector<int> lanes;  // 0 = vide, 1 = mur, 2 = barricade, 3 = voiture
-		float height;
+		std::vector<int> lanes;  // 0=vide, 1=mur, 2=barricade, 3=voiture
+		float spawnZ;
 	};
 
 protected:
@@ -59,21 +62,15 @@ public:
 	void Start() override;
 	void Update(float dt) override;
 
-	void ObjectsUpdate(float dt);
+private:
 	void procéduralGeneration();
 	void DestroyObjects();
 	void DestroyObjectsUpdate();
+	void findPlayerActor();
 
-	int GetMaxObjects() const { return m_MaxObjects; }
-	float GetObjectsSpeed() const { return m_ObjectsSpeed; }
-
-	void SetMaxObjects(int maxObjects) { m_MaxObjects = maxObjects; }
-	void SetObjectsSpeed(float speed) { m_ObjectsSpeed = speed; }
-
-private:
-	// Génération de patterns
+	// === PATTERNS ===
 	PatternType selectNextPattern();
 	void generatePattern(PatternType type, std::vector<int>& lanes);
 	void spawnObstaclesForLine(const PatternLine& line);
-	bool isPatternPassable(const std::vector<int>& lanes);
+	float getPlayerZPosition() const;
 };
