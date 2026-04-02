@@ -1,0 +1,45 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Barricade\\scene_mat0.mat"
+                        },
+                        "model": "Assets\\Models\\Barricade\\scene.gltf"
+                    },
+                    "type": "Mesh Component"
+                }
+            ],
+            "id": "14243338681732562159",
+            "name": "Barricade",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}

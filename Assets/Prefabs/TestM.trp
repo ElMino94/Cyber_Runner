@@ -1,0 +1,45 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Cube\\Cube_mat0.mat"
+                        },
+                        "model": "Assets\\Models\\Cube\\Cube.gltf"
+                    },
+                    "type": "Mesh Component"
+                }
+            ],
+            "id": "15025619236346791197",
+            "name": "TestM",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}
