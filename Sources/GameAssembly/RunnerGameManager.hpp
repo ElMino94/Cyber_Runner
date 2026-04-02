@@ -25,7 +25,7 @@ private:
 private:
     int   m_Score = 0;
     float m_ScoreTimer = 0.0f;
-    float m_ScoreRate = 10.0f; // points par seconde
+    float m_ScoreRate = 10.0f;
 
     bool  m_GameOver = false;
 };

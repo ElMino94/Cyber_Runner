@@ -40,18 +40,15 @@ void RunnerGameManager::DrawHUD()
 {
     ImGuiWindowFlags flags =
         ImGuiWindowFlags_NoDecoration |
-        ImGuiWindowFlags_AlwaysAutoResize |
-        ImGuiWindowFlags_NoSavedSettings |
-        ImGuiWindowFlags_NoFocusOnAppearing |
-        ImGuiWindowFlags_NoNav;
+        ImGuiWindowFlags_NoBackground |
+        ImGuiWindowFlags_NoInputs |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_AlwaysAutoResize;
 
-    ImGui::SetNextWindowPos(ImVec2(20.0f, 20.0f), ImGuiCond_Always);
-    ImGui::SetNextWindowBgAlpha(0.35f);
+    ImGui::SetNextWindowPos(ImVec2(400.0f, 125.0f), ImGuiCond_Always);
 
-    if (ImGui::Begin("RunnerHUD", nullptr, flags))
-    {
-        ImGui::Text("Score: %d", m_Score);
-    }
+    ImGui::Begin("HUD", nullptr, flags);
+    ImGui::Text("Score: %d", m_Score);
     ImGui::End();
 }
 
