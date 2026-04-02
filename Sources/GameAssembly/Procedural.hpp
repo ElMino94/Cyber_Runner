@@ -10,10 +10,10 @@ class Procedural : public TerminaScript::ScriptableComponent
 {
 private:
 	// === PARAMÈTRES DE GÉNÉRATION ===
-	int m_MaxObjects = 30;                    // Augmenté pour meilleure densité
-	float m_LaneWidth = 2.0f;                 // Augmenté de 1.5 à 2.0 pour plus d'espace
-	float m_SpacingBetweenPatterns = 4.5f;    // Augmenté de 2.5 à 3.5 pour éviter collisions
-	float m_DestroyDistance = 20.0f;          // Augmenté de 30 à 40 pour plus de visibilité
+	float m_LaneWidth = 2.0f;
+	float m_SpacingBetweenPatterns = 4.5f;
+	float m_DestroyDistance = 20.0f;
+	int m_LastSafeLane = 1;
 
 	// === PREFABS ===
 	TerminaScript::Prefab m_WallPrefab;
@@ -51,9 +51,16 @@ private:
 		float spawnZ;
 	};
 
+	struct WeightedPattern
+	{
+		PatternType type;
+		float weight;
+	};
+
 protected:
 	std::vector<Termina::Actor*> m_Objects;
 	std::vector<Termina::Actor*> m_ObjectsToDestroy;
+	std::vector<WeightedPattern> m_WeightedPatterns;
 
 public:
 	Procedural() = default;
@@ -65,9 +72,10 @@ public:
 private:
 	void procéduralGeneration();
 	void DestroyObjects();
-	void DestroyObjectsUpdate();
 	void findPlayerActor();
 	bool hasFreeLane(const std::vector<int>& lanes);
+	int findSafeLane(const std::vector<int>& lanes);
+	bool isReachable(const std::vector<int>& lanes);
 
 	// === PATTERNS ===
 	PatternType selectNextPattern();
