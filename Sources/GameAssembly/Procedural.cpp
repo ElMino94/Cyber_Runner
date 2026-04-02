@@ -17,7 +17,7 @@ void Procedural::Start()
 
 	// Initialiser le générateur aléatoire
 	m_RandomEngine.seed(std::random_device{}());
-	m_NextSpawnZ = 35.0f; // Commencer plus loin pour éviter les collisions
+	m_NextSpawnZ = 25.0f; // Commencer plus loin pour éviter les collisions
 
 	// Génération initiale
 	procéduralGeneration();
@@ -86,31 +86,26 @@ float Procedural::getPlayerZPosition() const
 
 void Procedural::procéduralGeneration()
 {
-	int currentCount = m_Objects.size();
-	
-	// Générer jusqu'à atteindre le maximum
-	if (currentCount < m_MaxObjects)
+	float playerZ = getPlayerZPosition();
+
+	while (m_NextSpawnZ < playerZ + 50.0f)
 	{
-		int objectsToSpawn = m_MaxObjects - currentCount;
+		std::vector<int> lanes(3, 0);
+		PatternType pattern;
 
-		for (int i = 0; i < objectsToSpawn; ++i)
+		do
 		{
-			// Créer un pattern
-			std::vector<int> lanes(3, 0);
-			PatternType pattern = selectNextPattern();
+			pattern = selectNextPattern();
 			generatePattern(pattern, lanes);
+		} while (!hasFreeLane(lanes));
 
-			// Construire la ligne
-			PatternLine line;
-			line.lanes = lanes;
-			line.spawnZ = m_NextSpawnZ;
+		PatternLine line;
+		line.lanes = lanes;
+		line.spawnZ = m_NextSpawnZ;
 
-			// Spawn les obstacles
-			spawnObstaclesForLine(line);
+		spawnObstaclesForLine(line);
 
-			// Préparer le prochain spawn - espacement augmenté pour éviter collisions
-			m_NextSpawnZ += m_SpacingBetweenPatterns;
-		}
+		m_NextSpawnZ += m_SpacingBetweenPatterns;
 	}
 }
 
@@ -217,14 +212,9 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 			break;
 		}
 
-		case PATTERN_BARRICADE_WALL:
-			// Mur de barricades complet - moins fréquent
-			lanes = {2, 2, 2};
-			break;
-
 		case PATTERN_CAR_OBSTACLE:
 		{
-			// Une seule voiture sur une voie
+			
 			std::uniform_int_distribution<> dist(0, 2);
 			int car = dist(m_RandomEngine);
 			lanes = {0, 0, 0};
@@ -242,7 +232,6 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 
 void Procedural::spawnObstaclesForLine(const PatternLine& line)
 {
-	float playerZ = getPlayerZPosition();
 	float baseX = -2.0f; // Ajusté pour nouvelle largeur de lane
 
 	for (int i = 0; i < 3; ++i)
@@ -250,7 +239,7 @@ void Procedural::spawnObstaclesForLine(const PatternLine& line)
 		if (line.lanes[i] == 0) continue;
 
 		float xPos = baseX + (i * m_LaneWidth);
-		float spawnZ = playerZ + line.spawnZ;
+		float spawnZ = line.spawnZ;
 
 		Termina::Actor* obstacle = nullptr;
 
@@ -277,5 +266,15 @@ void Procedural::spawnObstaclesForLine(const PatternLine& line)
 			m_Objects.push_back(obstacle);
 		}
 	}
+}
+
+bool Procedural::hasFreeLane(const std::vector<int>& lanes)
+{
+	for (int lane : lanes)
+	{
+		if (lane == 0)
+			return true;
+	}
+	return false;
 }
 

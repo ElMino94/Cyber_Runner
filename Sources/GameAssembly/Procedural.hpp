@@ -67,6 +67,7 @@ private:
 	void DestroyObjects();
 	void DestroyObjectsUpdate();
 	void findPlayerActor();
+	bool hasFreeLane(const std::vector<int>& lanes);
 
 	// === PATTERNS ===
 	PatternType selectNextPattern();
