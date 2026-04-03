@@ -76,6 +76,8 @@ private:
 	bool hasFreeLane(const std::vector<int>& lanes);
 	int findSafeLane(const std::vector<int>& lanes);
 	bool isReachable(const std::vector<int>& lanes);
+	bool isColliding();
+	void CollideP();
 
 	// === PATTERNS ===
 	PatternType selectNextPattern();

@@ -1,4 +1,6 @@
 #include "Procedural.hpp"
+#include "Procedural.hpp"
+#include "Procedural.hpp"
 #include <glm/glm.hpp>
 
 // ============= LIFECYCLE =============
@@ -343,5 +345,16 @@ bool Procedural::isReachable(const std::vector<int>& lanes)
 		}
 	}
 	return false;
+}
+
+bool Procedural::isColliding()
+{
+	return false;
+
+}
+
+void Procedural::CollideP()
+{
+
 }
 
