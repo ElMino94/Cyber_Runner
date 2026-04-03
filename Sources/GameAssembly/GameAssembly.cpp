@@ -5,11 +5,15 @@
 #include "FlyCamComponent.hpp"
 #include "ParticleSystem.hpp"
 #include "PhysicsTestComponent.hpp"
+#include "MenuComponent.hpp"
+#include "GameManagerComponent.hpp"
 
 COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(FlyCamComponent, "Fly Cam Component")
     REGISTER_COMPONENT(ParticleSystemComponent, "Particle System")
     REGISTER_COMPONENT(PhysicsTestComponent, "Physics Test")
+    REGISTER_COMPONENT(MenuComponent, "Menu")
+    REGISTER_COMPONENT(GameManagerComponent, "GameManager")
 COMPONENT_MODULE_END()
 
 TERMINA_DLL_EXPORT void SetImGuiContext(void* ctx, void* allocFunc, void* freeFunc, void* userData)
