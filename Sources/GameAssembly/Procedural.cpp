@@ -17,7 +17,20 @@ void Procedural::Start()
 
 	// Initialiser le générateur aléatoire
 	m_RandomEngine.seed(std::random_device{}());
-	m_NextSpawnZ = 35.0f; // Commencer plus loin pour éviter les collisions
+	m_NextSpawnZ = 25.0f; // Commencer plus loin pour éviter les collisions
+
+	//Init patern weight
+	m_WeightedPatterns =
+	{
+		{PATTERN_EMPTY, 3.0f},
+		{PATTERN_SINGLE_WALL, 2.0f},
+		{PATTERN_SIDE_WALLS, 2.0f},
+		{PATTERN_ZIGZAG, 1.5f},
+		{PATTERN_GAP_LEFT, 1.5f},
+		{PATTERN_GAP_RIGHT, 1.5f},
+		{PATTERN_NARROW_GAP, 1.0f},
+		{PATTERN_CAR_OBSTACLE, 1.0f}
+	};
 
 	// Génération initiale
 	procéduralGeneration();
@@ -33,8 +46,6 @@ void Procedural::Update(float dt)
 	// Génération de nouveaux obstacles
 	procéduralGeneration();
 	
-	// Nettoyage effectif
-	DestroyObjectsUpdate();
 }
 
 // ============= RECHERCHE DU JOUEUR =============
@@ -86,82 +97,96 @@ float Procedural::getPlayerZPosition() const
 
 void Procedural::procéduralGeneration()
 {
-	int currentCount = m_Objects.size();
-	
-	// Générer jusqu'à atteindre le maximum
-	if (currentCount < m_MaxObjects)
+	float playerZ = getPlayerZPosition();
+
+	while (m_NextSpawnZ < playerZ + 50.0f)
 	{
-		int objectsToSpawn = m_MaxObjects - currentCount;
+		std::vector<int> lanes(3, 0);
+		PatternType pattern;
 
-		for (int i = 0; i < objectsToSpawn; ++i)
+		int attempts = 0;
+
+		do
 		{
-			// Créer un pattern
-			std::vector<int> lanes(3, 0);
-			PatternType pattern = selectNextPattern();
+			pattern = selectNextPattern();
 			generatePattern(pattern, lanes);
+			attempts++;
+		} while ((!hasFreeLane(lanes) || !isReachable(lanes)) && attempts < 10);
 
-			// Construire la ligne
-			PatternLine line;
-			line.lanes = lanes;
-			line.spawnZ = m_NextSpawnZ;
-
-			// Spawn les obstacles
-			spawnObstaclesForLine(line);
-
-			// Préparer le prochain spawn - espacement augmenté pour éviter collisions
-			m_NextSpawnZ += m_SpacingBetweenPatterns;
+		// fallback si aucun pattern valide
+		if (attempts >= 10)
+		{
+			lanes = { 0, 1, 0 }; // centre libre garanti
 		}
+
+		PatternLine line;
+		line.lanes = lanes;
+		line.spawnZ = m_NextSpawnZ;
+
+		spawnObstaclesForLine(line);
+		m_LastSafeLane = findSafeLane(lanes);
+		m_NextSpawnZ += m_SpacingBetweenPatterns;
 	}
 }
 
 // ============= DESTRUCTION =============
 
-void Procedural::DestroyObjects()
-{
-	float playerZ = getPlayerZPosition();
-	float destroyThreshold = playerZ - m_DestroyDistance;
 
-	for (auto& obj : m_Objects)
+	void Procedural::DestroyObjects()
 	{
-		if (!obj || !obj->HasComponent<Termina::Transform>())
-			continue;
+		float playerZ = getPlayerZPosition();
+		float threshold = playerZ - m_DestroyDistance;
 
-		float objectZ = obj->GetComponent<Termina::Transform>().GetPosition().z;
+		auto it = m_Objects.begin();
 
-		// Détruire si trop loin derrière le joueur
-		if (objectZ < destroyThreshold)
+		while (it != m_Objects.end())
 		{
-			m_ObjectsToDestroy.push_back(obj);
+			auto obj = *it;
+
+			if (!obj || !obj->HasComponent<Termina::Transform>())
+			{
+				it = m_Objects.erase(it);
+				continue;
+			}
+
+			float z = obj->GetComponent<Termina::Transform>().GetPosition().z;
+
+			if (z < threshold)
+			{
+				Destroy(obj);
+				it = m_Objects.erase(it);
+			}
+			else
+			{
+				++it;
+			}
 		}
 	}
-}
-
-void Procedural::DestroyObjectsUpdate()
-{
-	for (auto& obj : m_ObjectsToDestroy)
-	{
-		Destroy(obj);
-		m_Objects.erase(std::remove(m_Objects.begin(), m_Objects.end(), obj), m_Objects.end());
-	}
-	m_ObjectsToDestroy.clear();
-}
 
 // ============= SÉLECTION PATTERN =============
 
-Procedural::PatternType Procedural::selectNextPattern()
-{
-	std::uniform_int_distribution<> dist(0, PATTERN_COUNT - 1);
-	int patternIndex;
 
-	// Éviter répétition - favorise les patterns faciles
-	do
+	Procedural::PatternType Procedural::selectNextPattern()
 	{
-		patternIndex = dist(m_RandomEngine);
-	} while (patternIndex == m_LastPatternIndex && m_LastPatternIndex != -1);
+		float totalWeight = 0.0f;
 
-	m_LastPatternIndex = patternIndex;
-	return static_cast<PatternType>(patternIndex);
-}
+		for (auto& p : m_WeightedPatterns)
+			totalWeight += p.weight;
+
+		std::uniform_real_distribution<float> dist(0.0f, totalWeight);
+		float r = dist(m_RandomEngine);
+
+		float cumulative = 0.0f;
+
+		for (auto& p : m_WeightedPatterns)
+		{
+			cumulative += p.weight;
+			if (r <= cumulative)
+				return p.type;
+		}
+
+		return PATTERN_EMPTY;
+	}
 
 // ============= GÉNÉRATION PATTERNS =============
 
@@ -217,14 +242,9 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 			break;
 		}
 
-		case PATTERN_BARRICADE_WALL:
-			// Mur de barricades complet - moins fréquent
-			lanes = {2, 2, 2};
-			break;
-
 		case PATTERN_CAR_OBSTACLE:
 		{
-			// Une seule voiture sur une voie
+			
 			std::uniform_int_distribution<> dist(0, 2);
 			int car = dist(m_RandomEngine);
 			lanes = {0, 0, 0};
@@ -242,15 +262,14 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 
 void Procedural::spawnObstaclesForLine(const PatternLine& line)
 {
-	float playerZ = getPlayerZPosition();
-	float baseX = -2.0f; // Ajusté pour nouvelle largeur de lane
+	float baseX = -((3 - 1) * m_LaneWidth) / 2.0f; // Ajusté pour nouvelle largeur de lane
 
 	for (int i = 0; i < 3; ++i)
 	{
 		if (line.lanes[i] == 0) continue;
 
 		float xPos = baseX + (i * m_LaneWidth);
-		float spawnZ = playerZ + line.spawnZ;
+		float spawnZ = line.spawnZ;
 
 		Termina::Actor* obstacle = nullptr;
 
@@ -277,5 +296,52 @@ void Procedural::spawnObstaclesForLine(const PatternLine& line)
 			m_Objects.push_back(obstacle);
 		}
 	}
+}
+
+bool Procedural::hasFreeLane(const std::vector<int>& lanes)
+{
+	for (int lane : lanes)
+	{
+		if (lane == 0)
+			return true;
+	}
+	return false;
+}
+
+int Procedural::findSafeLane(const std::vector<int>& lanes)
+{
+	int bestLane = -1;
+	int bestDistance = 999;
+
+	for (int i = 0; i < lanes.size(); ++i)
+	{
+		if (lanes[i] == 0)
+		{
+			int dist = abs(i - m_LastSafeLane);
+
+			if (dist < bestDistance)
+			{
+				bestDistance = dist;
+				bestLane = i;
+			}
+		}
+	}
+
+	return bestLane;
+}
+
+bool Procedural::isReachable(const std::vector<int>& lanes)
+{
+	if (m_LastSafeLane < 0) return true;
+
+	for (int i = 0; i < lanes.size(); ++i)
+	{
+		if (lanes[i] == 0)
+		{
+			if (abs(i - m_LastSafeLane) <= 1)
+				return true;
+		}
+	}
+	return false;
 }
 
