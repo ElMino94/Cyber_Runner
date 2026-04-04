@@ -8,6 +8,7 @@
 #include "RunnerPlayerComponent.hpp"
 #include "Procedural.hpp"
 #include "RunnerGameManager.hpp"
+#include "CollideCheck.hpp"
 
 COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(FlyCamComponent, "Fly Cam Component")
@@ -16,6 +17,7 @@ COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(RunnerGameManager, "Runner Game Manager")
     REGISTER_COMPONENT(RunnerPlayerComponent, "Runner Player Component")
     REGISTER_COMPONENT(Procedural, "Procedural manager")    
+    REGISTER_COMPONENT(CollideStatus, "ColliderCheck")
 COMPONENT_MODULE_END()
 
 TERMINA_DLL_EXPORT void SetImGuiContext(void* ctx, void* allocFunc, void* freeFunc, void* userData)

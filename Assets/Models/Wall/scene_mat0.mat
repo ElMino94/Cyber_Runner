@@ -1,5 +1,5 @@
 {
-  "albedo_texture": "Assets\\Models\\Wall\\textures\\SciFi_Texture_baseColor.jpeg",
+  "albedo_texture": "Assets\\Models\\Wall\\SciFi_Texture_baseColor.jpeg",
   "alpha_test": false,
   "color": [
     1.0,
@@ -8,8 +8,8 @@
   ],
   "emissive_texture": "",
   "metallic_factor": 1.0,
-  "normal_texture": "Assets\\Models\\Wall\\textures\\SciFi_Texture_normal.png",
-  "orm_texture": "Assets\\Models\\Wall\\textures\\SciFi_Texture_metallicRoughness.png",
+  "normal_texture": "Assets\\Models\\Wall\\SciFi_Texture_normal.png",
+  "orm_texture": "Assets\\Models\\Wall\\SciFi_Texture_metallicRoughness.png",
   "override_metallic": false,
   "override_roughness": false,
   "roughness_factor": 1.0
