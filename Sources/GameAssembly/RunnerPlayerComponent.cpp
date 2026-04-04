@@ -32,13 +32,13 @@ void RunnerPlayerComponent::Update(float deltaTime)
 
 void RunnerPlayerComponent::HandleInput()
 {
-    if (TerminaScript::Input::IsKeyPressed(Termina::Key::A) ||
+    if (TerminaScript::Input::IsKeyPressed(Termina::Key::D) ||
         TerminaScript::Input::IsKeyPressed(Termina::Key::Left))
     {
         m_CurrentLane = (std::max)(-1, m_CurrentLane - 1);
     }
 
-    if (TerminaScript::Input::IsKeyPressed(Termina::Key::D) ||
+    if (TerminaScript::Input::IsKeyPressed(Termina::Key::A) ||
         TerminaScript::Input::IsKeyPressed(Termina::Key::Right))
     {
         m_CurrentLane = (std::min)(1, m_CurrentLane + 1);

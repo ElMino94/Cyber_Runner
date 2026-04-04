@@ -1,0 +1,90 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            1.3577604293823242,
+                            8.804645538330078
+                        ],
+                        "rotation": [
+                            0.7071067690849304,
+                            1.0396686320746085e-06,
+                            0.7071067690849304,
+                            -1.0396686320746085e-06
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Barricade\\scene_mat0.mat"
+                        },
+                        "model": "Assets\\Models\\Barricade\\scene.gltf"
+                    },
+                    "type": "Mesh Component"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "allow_sleep": false,
+                        "angular_damping": 0.05000000074505806,
+                        "freeze_pos": [
+                            true,
+                            true,
+                            true
+                        ],
+                        "freeze_rot": [
+                            false,
+                            false,
+                            false
+                        ],
+                        "gravity_factor": 1.0,
+                        "is_sensor": true,
+                        "linear_damping": 0.05000000074505806,
+                        "mass": 1.0,
+                        "type": 1
+                    },
+                    "type": "Rigidbody"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "half_extents": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "offset": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rot_off": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Box Collider"
+                }
+            ],
+            "id": "10874053288123763040",
+            "name": "Barricade",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}
