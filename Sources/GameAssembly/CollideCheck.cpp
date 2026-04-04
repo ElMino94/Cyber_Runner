@@ -6,13 +6,12 @@
 void CollideStatus::Start()
 {
 	m_Player = m_Owner->GetParentWorld()->GetActorByName("Player");
-	TN_INFO("CollideStatus inizialisé sur '%s'", m_Name.c_str());
 
 	// Ajoute un collider si absent
 	if (!m_Owner->HasComponent<Termina::BoxCollider>())
 	{
 		auto& collider = m_Owner->AddComponent<Termina::BoxCollider>();
-		collider.HalfExtents = glm::vec3(0.5f, 0.5f, 0.5f);
+		collider.HalfExtents = glm::vec3(1.0f, 1.0f, 1.0f);
 	}
 
 	// Ajoute un rigidbody si absent
@@ -26,22 +25,6 @@ void CollideStatus::Start()
 void CollideStatus::Update(float dt)
 {
 	// Le système physique gère automatiquement les callbacks
-}
-
-void CollideStatus::OnCollisionEnter(Termina::Actor* other)
-{
-	if (!other)
-		return;
-
-	if (other == m_Player)
-	{
-		TN_INFO(" COLLISION avec le joueur ! Game Over - '%s'", m_Name.c_str());
-		// Faire le Game Over ici
-	}
-	else
-	{
-		TN_DEBUG("Collision avec : '%s'", other->GetName().c_str());
-	}
 }
 
 void CollideStatus::OnTriggerEnter(Termina::Actor* other)
