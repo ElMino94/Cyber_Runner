@@ -1,7 +1,7 @@
 #include "Procedural.hpp"
-#include "Procedural.hpp"
-#include "Procedural.hpp"
-#include <glm/glm.hpp>
+#include <Termina/Physics/Components/BoxCollider.hpp>
+#include <Termina/Physics/Components/Rigidbody.hpp>
+
 
 // ============= LIFECYCLE =============
 
@@ -12,16 +12,16 @@ void Procedural::Start()
 	// Initialiser les prefabs
 	m_WallPrefab = TerminaScript::Prefab("Assets/Prefabs/Wall.trp");
 	m_BarricadePrefab = TerminaScript::Prefab("Assets/Prefabs/Barricade.trp");
-	m_CarPrefab = TerminaScript::Prefab("Assets/Prefabs/Car.trp");
+	m_Coin = TerminaScript::Prefab("Assets/Prefabs/Coin.trp");
 
 	// Chercher le joueur
 	findPlayerActor();
 
 	// Initialiser le générateur aléatoire
 	m_RandomEngine.seed(std::random_device{}());
-	m_NextSpawnZ = 25.0f; // Commencer plus loin pour éviter les collisions
+	m_NextSpawnZ = 25.0f;
 
-	//Init patern weight
+	// Init pattern weight
 	m_WeightedPatterns =
 	{
 		{PATTERN_EMPTY, 3.0f},
@@ -30,8 +30,13 @@ void Procedural::Start()
 		{PATTERN_ZIGZAG, 1.5f},
 		{PATTERN_GAP_LEFT, 1.5f},
 		{PATTERN_GAP_RIGHT, 1.5f},
+		{PATTERN_GAP_CENTER, 1.5f},
 		{PATTERN_NARROW_GAP, 1.0f},
-		{PATTERN_CAR_OBSTACLE, 1.0f}
+		{PATTERN_BARRICADE_WALL, 1.5f},
+		{PATTERN_COINS_LEFT, 1.2f},
+		{PATTERN_COINS_RIGHT, 1.2f},
+		{PATTERN_COINS_CENTER, 1.0f},
+		{PATTERN_COINS_ALL, 0.8f}
 	};
 
 	// Génération initiale
@@ -41,13 +46,17 @@ void Procedural::Start()
 void Procedural::Update(float dt)
 {
 	TerminaScript::ScriptableComponent::Update(dt);
-	
-	// Destruction des obstacles trop loin
-	DestroyObjects();
-	
+
 	// Génération de nouveaux obstacles
 	procéduralGeneration();
-	
+
+	// swap vecteurs pour éviter de supprimer pendant l'itération
+	FObjectsDestroy();
+}
+
+void Procedural::OnPostUpdate(float dt)
+{
+	DestroyObjects();
 }
 
 // ============= RECHERCHE DU JOUEUR =============
@@ -118,7 +127,7 @@ void Procedural::procéduralGeneration()
 		// fallback si aucun pattern valide
 		if (attempts >= 10)
 		{
-			lanes = { 0, 1, 0 }; // centre libre garanti
+			lanes = { 0, 1, 0 };
 		}
 
 		PatternLine line;
@@ -133,62 +142,84 @@ void Procedural::procéduralGeneration()
 
 // ============= DESTRUCTION =============
 
+void Procedural::FObjectsDestroy()
+{
+	float playerZ = getPlayerZPosition();
+	float threshold = playerZ - m_DestroyDistance;
 
-	void Procedural::DestroyObjects()
+	auto it = m_Objects.begin();
+
+	while (it != m_Objects.end())
 	{
-		float playerZ = getPlayerZPosition();
-		float threshold = playerZ - m_DestroyDistance;
+		auto obj = *it;
 
-		auto it = m_Objects.begin();
-
-		while (it != m_Objects.end())
+		if (!obj || !obj->HasComponent<Termina::Transform>())
 		{
-			auto obj = *it;
-
-			if (!obj || !obj->HasComponent<Termina::Transform>())
-			{
-				it = m_Objects.erase(it);
-				continue;
-			}
-
-			float z = obj->GetComponent<Termina::Transform>().GetPosition().z;
-
-			if (z < threshold)
-			{
-				Destroy(obj);
-				it = m_Objects.erase(it);
-			}
-			else
-			{
-				++it;
-			}
+			it = m_Objects.erase(it);
+			continue;
 		}
+
+		float z = obj->GetComponent<Termina::Transform>().GetPosition().z;
+
+		if (z < threshold)
+		{
+			m_ObjectsToDestroy.push_back(obj);
+			it = m_Objects.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+
 	}
+}
+
+void Procedural::DestroyObjects()
+{
+	for (auto* obj : m_ObjectsToDestroy)
+	{
+		if (!obj) continue;
+
+		obj->SetActive(false);
+
+		if (obj->HasComponent<Termina::Rigidbody>())
+		{
+			obj->GetComponent<Termina::Rigidbody>().SetActive(false);
+		}
+
+		if (obj->HasComponent<Termina::BoxCollider>())
+		{
+			obj->GetComponent<Termina::BoxCollider>().SetActive(false);
+		}
+		Destroy(obj);
+	}
+
+	m_ObjectsToDestroy.clear();
+}
 
 // ============= SÉLECTION PATTERN =============
 
+Procedural::PatternType Procedural::selectNextPattern()
+{
+	float totalWeight = 0.0f;
 
-	Procedural::PatternType Procedural::selectNextPattern()
+	for (auto& p : m_WeightedPatterns)
+		totalWeight += p.weight;
+
+	std::uniform_real_distribution<float> dist(0.0f, totalWeight);
+	float r = dist(m_RandomEngine);
+
+	float cumulative = 0.0f;
+
+	for (auto& p : m_WeightedPatterns)
 	{
-		float totalWeight = 0.0f;
-
-		for (auto& p : m_WeightedPatterns)
-			totalWeight += p.weight;
-
-		std::uniform_real_distribution<float> dist(0.0f, totalWeight);
-		float r = dist(m_RandomEngine);
-
-		float cumulative = 0.0f;
-
-		for (auto& p : m_WeightedPatterns)
-		{
-			cumulative += p.weight;
-			if (r <= cumulative)
-				return p.type;
-		}
-
-		return PATTERN_EMPTY;
+		cumulative += p.weight;
+		if (r <= cumulative)
+			return p.type;
 	}
+
+	return PATTERN_EMPTY;
+}
 
 // ============= GÉNÉRATION PATTERNS =============
 
@@ -197,46 +228,38 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 	switch (type)
 	{
 		case PATTERN_EMPTY:
-			// Plus fréquent pour laisser respirer le joueur
 			lanes = {0, 0, 0};
 			break;
 
 		case PATTERN_SINGLE_WALL:
-			// Mur au centre seulement
 			lanes = {0, 1, 0};
 			break;
 
 		case PATTERN_SIDE_WALLS:
-			// Murs sur les côtés, passage au centre
 			lanes = {1, 0, 1};
 			break;
 
 		case PATTERN_ZIGZAG:
 		{
-			// Zigzag alternant
 			std::uniform_int_distribution<> dist(0, 1);
 			lanes = dist(m_RandomEngine) ? std::vector<int>{1, 0, 0} : std::vector<int>{0, 0, 1};
 			break;
 		}
 
 		case PATTERN_GAP_LEFT:
-			// Trou à gauche seulement
 			lanes = {0, 1, 1};
 			break;
 
 		case PATTERN_GAP_RIGHT:
-			// Trou à droite seulement
 			lanes = {1, 1, 0};
 			break;
 
 		case PATTERN_GAP_CENTER:
-			// Trou au centre
 			lanes = {1, 0, 1};
 			break;
 
 		case PATTERN_NARROW_GAP:
 		{
-			// Un seul passage étroit
 			std::uniform_int_distribution<> dist(0, 2);
 			int gap = dist(m_RandomEngine);
 			lanes = {1, 1, 1};
@@ -244,15 +267,50 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 			break;
 		}
 
-		case PATTERN_CAR_OBSTACLE:
+		case PATTERN_BARRICADE_WALL:
 		{
-			
-			std::uniform_int_distribution<> dist(0, 2);
-			int car = dist(m_RandomEngine);
-			lanes = {0, 0, 0};
-			lanes[car] = 3;
+			std::uniform_int_distribution<> dist(0, 3);
+			int pattern = dist(m_RandomEngine);
+
+			switch (pattern)
+			{
+			case 0:
+				lanes = { 2, 0, 0 };
+				break;
+
+			case 1:
+				lanes = { 0, 0, 2 };
+				break;
+
+			case 2:
+				lanes = { 2, 0, 2 };
+				break;
+
+			case 3:
+				lanes = { 2, 3, 2 }; 
+				break;
+			}
 			break;
 		}
+
+		case PATTERN_COINS_LEFT:
+			lanes = {3, 0, 0};
+			break;
+
+		case PATTERN_COINS_RIGHT:
+			lanes = {0, 0, 3};
+			break;
+
+		case PATTERN_COINS_CENTER:
+			lanes = {0, 3, 0};
+			break;
+
+		case PATTERN_COINS_ALL:
+			lanes = { 3, 3, 3 };
+
+
+			m_NextSpawnZ += m_SpacingBetweenPatterns * 0.5f;
+			break;
 
 		default:
 			lanes = {0, 0, 0};
@@ -261,10 +319,9 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 }
 
 // ============= SPAWN OBSTACLES =============
-
 void Procedural::spawnObstaclesForLine(const PatternLine& line)
 {
-	float baseX = -((3 - 1) * m_LaneWidth) / 2.0f; // Ajusté pour nouvelle largeur de lane
+	float baseX = -((3 - 1) * m_LaneWidth) / 2.0f;
 
 	for (int i = 0; i < 3; ++i)
 	{
@@ -274,27 +331,34 @@ void Procedural::spawnObstaclesForLine(const PatternLine& line)
 		float spawnZ = line.spawnZ;
 
 		Termina::Actor* obstacle = nullptr;
+		float yPos = 2.0f;
 
-		// Instantier le bon prefab
 		switch (line.lanes[i])
 		{
-			case 1:
-				obstacle = Instantiate(m_WallPrefab);
-				break;
-			case 2:
-				obstacle = Instantiate(m_BarricadePrefab);
-				break;
-			case 3:
-				obstacle = Instantiate(m_CarPrefab);
-				break;
+		case 1: // WALL
+			obstacle = Instantiate(m_WallPrefab);
+			yPos = 2.0f;
+			break;
+
+		case 2: // BARRICADE
+			obstacle = Instantiate(m_BarricadePrefab);
+			yPos = 1.0f;
+			break;
+
+		case 3: // COIN
+			obstacle = Instantiate(m_Coin);
+			yPos = 2.0f;
+			break;
 		}
 
-		if (obstacle && obstacle->HasComponent<Termina::Transform>())
+		if (!obstacle)
+			continue;
+
+		if (obstacle->HasComponent<Termina::Transform>())
 		{
-			// Position absolue : X pour la lane, Y = 0, Z devant le joueur
-			Termina::Transform& transform = obstacle->GetComponent<Termina::Transform>();
-			transform.SetPosition(glm::vec3(xPos, 2.0f, spawnZ));
-			
+			auto& transform = obstacle->GetComponent<Termina::Transform>();
+			transform.SetPosition(glm::vec3(xPos, yPos, spawnZ));
+
 			m_Objects.push_back(obstacle);
 		}
 	}
@@ -312,19 +376,24 @@ bool Procedural::hasFreeLane(const std::vector<int>& lanes)
 
 int Procedural::findSafeLane(const std::vector<int>& lanes)
 {
+	if (lanes.empty())
+	{
+		return -1;
+	}
+
 	int bestLane = -1;
 	int bestDistance = 999;
 
-	for (int i = 0; i < lanes.size(); ++i)
+	for (size_t i = 0; i < lanes.size(); ++i)
 	{
 		if (lanes[i] == 0)
 		{
-			int dist = abs(i - m_LastSafeLane);
+			int dist = abs((int)i - m_LastSafeLane);
 
 			if (dist < bestDistance)
 			{
 				bestDistance = dist;
-				bestLane = i;
+				bestLane = (int)i;
 			}
 		}
 	}
@@ -336,25 +405,13 @@ bool Procedural::isReachable(const std::vector<int>& lanes)
 {
 	if (m_LastSafeLane < 0) return true;
 
-	for (int i = 0; i < lanes.size(); ++i)
+	for (size_t i = 0; i < lanes.size(); ++i)
 	{
 		if (lanes[i] == 0)
 		{
-			if (abs(i - m_LastSafeLane) <= 1)
+			if (abs((int)i - m_LastSafeLane) <= 1)
 				return true;
 		}
 	}
 	return false;
 }
-
-bool Procedural::isColliding()
-{
-	return false;
-
-}
-
-void Procedural::CollideP()
-{
-
-}
-

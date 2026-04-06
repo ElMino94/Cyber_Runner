@@ -18,7 +18,7 @@ private:
 	// === PREFABS ===
 	TerminaScript::Prefab m_WallPrefab;
 	TerminaScript::Prefab m_BarricadePrefab;
-	TerminaScript::Prefab m_CarPrefab;
+	TerminaScript::Prefab m_Coin;
 
 	// === RÉFÉRENCES ===
 	Termina::Actor* m_PlayerActor = nullptr;
@@ -40,14 +40,17 @@ private:
 		PATTERN_GAP_CENTER,      // Trou au centre
 		PATTERN_NARROW_GAP,      // Passage étroit
 		PATTERN_BARRICADE_WALL,  // Mur de barricades
-		PATTERN_CAR_OBSTACLE,    // Voiture
+		PATTERN_COINS_LEFT,      // Pièces à gauche
+		PATTERN_COINS_RIGHT,     // Pièces à droite
+		PATTERN_COINS_CENTER,    // Pièces au centre
+		PATTERN_COINS_ALL,       // Pièces partout
 		PATTERN_COUNT
 	};
 
 	// === STRUCTURE PATTERN ===
 	struct PatternLine
 	{
-		std::vector<int> lanes;  // 0=vide, 1=mur, 2=barricade, 3=voiture
+		std::vector<int> lanes;  // 0=vide, 1=mur, 2=barricade, 3=coin
 		float spawnZ;
 	};
 
@@ -68,16 +71,16 @@ public:
 
 	void Start() override;
 	void Update(float dt) override;
+	void OnPostUpdate(float dt) override;
 
 private:
 	void procéduralGeneration();
+	void FObjectsDestroy();
 	void DestroyObjects();
 	void findPlayerActor();
 	bool hasFreeLane(const std::vector<int>& lanes);
 	int findSafeLane(const std::vector<int>& lanes);
 	bool isReachable(const std::vector<int>& lanes);
-	bool isColliding();
-	void CollideP();
 
 	// === PATTERNS ===
 	PatternType selectNextPattern();

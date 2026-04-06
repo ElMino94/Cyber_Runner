@@ -15,4 +15,5 @@ public:
 
 protected:
     Termina::Actor* m_Player = nullptr;
+    bool HasCollided; 
 };

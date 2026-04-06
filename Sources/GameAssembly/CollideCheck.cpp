@@ -29,9 +29,18 @@ void CollideStatus::Update(float dt)
 
 void CollideStatus::OnTriggerEnter(Termina::Actor* other)
 {
-	// Alternative si vous voulez utiliser des triggers
-	if (!other || other != m_Player)
-		return;
+    if (!other || other != m_Player)
+        return;
 
-	TN_INFO("FROM wall trigger TRIGGER avec le joueur ! Game Over - '%s'", m_Name.c_str());
+    if (HasCollided == true)
+        return;
+
+
+	TN_INFO("Game over", m_Owner->GetName().c_str());
+
+
+
+	//place all code above this line or else it will bring problems whith colide
+    HasCollided = true;
+	
 }
