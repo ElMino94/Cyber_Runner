@@ -1,0 +1,16 @@
+{
+  "albedo_texture": "Assets\\Models\\Envir\\Texture\\Metal_Orange\\Metal_Orange_BaseColor.png",
+  "alpha_test": false,
+  "color": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "emissive_texture": "",
+  "metallic_factor": 1.0,
+  "normal_texture": "Assets\\Models\\Envir\\Texture\\Metal_Orange\\Metal_Orange_Normal.png",
+  "orm_texture": "Assets\\Models\\Envir\\Texture\\Metal_Orange\\Metal_Orange_Roughness.png",
+  "override_metallic": false,
+  "override_roughness": false,
+  "roughness_factor": 1.0
+}
