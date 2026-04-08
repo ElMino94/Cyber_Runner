@@ -1,0 +1,16 @@
+{
+  "albedo_texture": "Assets\\Models\\Envir\\Corridor\\textures\\sfglass02.001_baseColor.jpeg",
+  "alpha_test": false,
+  "color": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "emissive_texture": "Assets\\Models\\Envir\\Corridor\\textures\\sfglass02.001_emissive.jpeg",
+  "metallic_factor": 1.0,
+  "normal_texture": "Assets\\Models\\Envir\\Corridor\\textures\\sfglass02.001_normal.jpeg",
+  "orm_texture": "Assets\\Models\\Envir\\Corridor\\textures\\sfglass02.001_metallicRoughness.png",
+  "override_metallic": false,
+  "override_roughness": false,
+  "roughness_factor": 1.0
+}

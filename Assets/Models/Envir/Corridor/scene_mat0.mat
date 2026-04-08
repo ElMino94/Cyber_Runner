@@ -1,0 +1,16 @@
+{
+  "albedo_texture": "Assets\\Models\\Envir\\Corridor\\textures\\m021SFF_001.001_baseColor.png",
+  "alpha_test": false,
+  "color": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "emissive_texture": "",
+  "metallic_factor": 1.0,
+  "normal_texture": "Assets\\Models\\Envir\\Corridor\\textures\\m021SFF_001.001_normal.jpeg",
+  "orm_texture": "Assets\\Models\\Envir\\Corridor\\textures\\m021SFF_001.001_metallicRoughness.png",
+  "override_metallic": false,
+  "override_roughness": false,
+  "roughness_factor": 1.0
+}

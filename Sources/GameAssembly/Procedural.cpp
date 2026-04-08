@@ -191,7 +191,7 @@ void Procedural::DestroyObjects()
 		{
 			obj->GetComponent<Termina::BoxCollider>().SetActive(false);
 		}
-		Destroy(obj);
+		m_Owner->GetParentWorld()->DestroyActor(obj);
 	}
 
 	m_ObjectsToDestroy.clear();
@@ -342,7 +342,7 @@ void Procedural::spawnObstaclesForLine(const PatternLine& line)
 
 		case 2: // BARRICADE
 			obstacle = Instantiate(m_BarricadePrefab);
-			yPos = 1.0f;
+			yPos = 1.5f;
 			break;
 
 		case 3: // COIN

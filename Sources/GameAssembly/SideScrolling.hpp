@@ -1,5 +1,6 @@
 #pragma once
 #include <Termina/Scripting/API/ScriptingAPI.hpp>
+#include <vector>
 using namespace TerminaScript;
 
 class SideScrolling : public TerminaScript::ScriptableComponent
@@ -11,10 +12,10 @@ public:
     void Start()  override;
     void Update(float deltaTime) override;
 
-    void DoorSideScrolling();
-    void WallsSideScrolling();
+    void CorridorSideScrolling();
 	void CheckIfNeedReplace();
 
 protected:
     Termina::Actor* m_Player = nullptr;
+	std::vector<Termina::Actor*> m_Segments;
 };

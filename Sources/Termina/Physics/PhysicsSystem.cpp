@@ -247,6 +247,9 @@ namespace Termina {
             {
                 for (auto* comp : self->GetAllComponents())
                 {
+                    if (!comp)
+                        continue;
+
                     if (auto* cb = dynamic_cast<IPhysicsCallbacks*>(comp))
                     {
                         switch (evt.type)
