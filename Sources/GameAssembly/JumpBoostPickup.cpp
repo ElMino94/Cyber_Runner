@@ -2,10 +2,27 @@
 
 #include <ImGui/imgui.h>
 #include <Termina/Core/Logger.hpp>
+#include <Termina/Physics/Components/SphereCollider.hpp>
+#include <Termina/Physics/Components/Rigidbody.hpp>
+#include <Termina/Renderer/Components/MeshComponent.hpp>
+#include "RunnerPlayerComponent.hpp"
 
 void JumpBoostPickup::Start()
 {
-    TN_INFO("JumpBoostPickup started on actor '%s'", m_Name.c_str());
+    TN_INFO("JumpBoostPickup started on actor '%s' | Multiplier: %.2f | Duration: %.2f", 
+            m_Name.c_str(), multiplier, duration);
+    
+    // R�cup�rer le joueur
+    m_Player = m_Owner->GetParentWorld()->GetActorByName("Player");
+    
+    if (m_Player)
+    {
+        TN_INFO("JumpBoostPickup: Joueur trouv�");
+    }
+    else
+    {
+        TN_WARN("JumpBoostPickup: Impossible de trouver le joueur!");
+    }
 }
 
 void JumpBoostPickup::Update(float deltaTime)
@@ -40,4 +57,30 @@ void JumpBoostPickup::Deserialize(const nlohmann::json& in)
     if (in.contains("multiplier"))    multiplier = in["multiplier"];
     if (in.contains("duration"))      duration = in["duration"];
     if (in.contains("rotationSpeed")) m_RotationSpeed = in["rotationSpeed"];
+
+    TN_INFO("JumpBoostPickup: Collision avec le joueur! Activation boost: x%.2f pour %.1f sec", 
+            multiplier, duration);
+
+    if (m_Player && m_Player->HasComponent<RunnerPlayerComponent>())
+    {
+        auto& playerComponent = m_Player->GetComponent<RunnerPlayerComponent>();
+        playerComponent.ActivateJumpBoost(multiplier, duration);
+    }
+    else
+    {
+        TN_ERROR("JumpBoostPickup: Le joueur n'a pas le composant RunnerPlayerComponent!");
+    }
+
+    IsTaken = true;
+
+    // Supprimer le composant mesh pour masquer l'objet
+    if (m_Owner->HasComponent<Termina::MeshComponent>())
+        m_Owner->RemoveComponent<Termina::MeshComponent>();
+
+    // D�sactiver tous les composants restants
+    for (auto* comp : m_Owner->GetAllComponents())
+        comp->SetActive(false);
+
+    // D�sactiver l'actor lui-m�me
+    m_Owner->SetActive(false);
 }

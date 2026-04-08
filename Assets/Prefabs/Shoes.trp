@@ -18,9 +18,9 @@
                             0.0
                         ],
                         "scale": [
-                            1.0,
-                            1.0,
-                            1.0
+                            1.5,
+                            1.5,
+                            1.5
                         ]
                     },
                     "type": "Transform"
@@ -28,10 +28,7 @@
                 {
                     "active": true,
                     "data": {
-                        "material_overrides": {
-                            "0": "Assets\\Models\\Shoes\\Goku Shoes_mat0.mat"
-                        },
-                        "model": "Assets\\Models\\Shoes\\Goku Shoes.glb"
+                        "model": "Assets\\Models\\Shoes\\scene.gltf"
                     },
                     "type": "Mesh Component"
                 },
@@ -78,11 +75,6 @@
                 },
                 {
                     "active": true,
-                    "data": {},
-                    "type": "Collectibles"
-                },
-                {
-                    "active": true,
                     "data": {
                         "duration": 5.0,
                         "multiplier": 8.5,
@@ -91,7 +83,7 @@
                     "type": "Jump Boost Pickup"
                 }
             ],
-            "id": "6712771523083473567",
+            "id": "6099532127552799889",
             "name": "Shoes",
             "parentId": null
         }

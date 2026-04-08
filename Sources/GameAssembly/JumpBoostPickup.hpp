@@ -14,10 +14,15 @@ public:
     void Inspect() override;
     void Serialize(nlohmann::json& out) const override;
     void Deserialize(const nlohmann::json& in) override;
+    void OnTriggerEnter(Termina::Actor* other) override;
 
 public:
-    float multiplier = 2.0f;
-    float duration = 5.0f;
+    float multiplier = 1.5f;  // Multiplicateur du saut (ex: 1.5 = 50% plus haut)
+    float duration = 5.0f;    // Durée en secondes
+    bool IsTaken = false;
+
+protected:
+    Termina::Actor* m_Player = nullptr;
 
 private:
     float m_RotationSpeed = 120.0f;
