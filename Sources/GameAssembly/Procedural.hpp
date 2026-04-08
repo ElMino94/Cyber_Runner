@@ -19,6 +19,7 @@ private:
 	TerminaScript::Prefab m_WallPrefab;
 	TerminaScript::Prefab m_BarricadePrefab;
 	TerminaScript::Prefab m_Coin;
+	TerminaScript::Prefab m_Shoes;
 
 	// === RÉFÉRENCES ===
 	Termina::Actor* m_PlayerActor = nullptr;
@@ -31,26 +32,29 @@ private:
 	// === TYPES DE PATTERNS ===
 	enum PatternType
 	{
-		PATTERN_EMPTY,           // Espace vide
-		PATTERN_SINGLE_WALL,     // Mur au centre
-		PATTERN_SIDE_WALLS,      // Murs sur les côtés
-		PATTERN_ZIGZAG,          // Zigzag
-		PATTERN_GAP_LEFT,        // Trou à gauche
-		PATTERN_GAP_RIGHT,       // Trou à droite
-		PATTERN_GAP_CENTER,      // Trou au centre
-		PATTERN_NARROW_GAP,      // Passage étroit
-		PATTERN_BARRICADE_WALL,  // Mur de barricades
-		PATTERN_COINS_LEFT,      // Pièces à gauche
-		PATTERN_COINS_RIGHT,     // Pièces à droite
-		PATTERN_COINS_CENTER,    // Pièces au centre
-		PATTERN_COINS_ALL,       // Pièces partout
+		PATTERN_EMPTY,              // Espace vide
+		PATTERN_SINGLE_WALL,        // Mur au centre
+		PATTERN_SIDE_WALLS,         // Murs sur les côtés
+		PATTERN_ZIGZAG,             // Zigzag
+		PATTERN_GAP_LEFT,           // Trou à gauche
+		PATTERN_GAP_RIGHT,          // Trou à droite
+		PATTERN_GAP_CENTER,         // Trou au centre
+		PATTERN_NARROW_GAP,         // Passage étroit
+		PATTERN_BARRICADE_WALL,     // Mur de barricades
+		PATTERN_COINS_LEFT,         // Pièces à gauche
+		PATTERN_COINS_RIGHT,        // Pièces à droite
+		PATTERN_COINS_CENTER,       // Pièces au centre
+		PATTERN_COINS_ALL,          // Pièces partout
+		PATTERN_SHOES_LEFT,         // Chaussures boost à gauche
+		PATTERN_SHOES_RIGHT,        // Chaussures boost à droite
+		PATTERN_SHOES_CENTER,       // Chaussures boost au centre
 		PATTERN_COUNT
 	};
 
 	// === STRUCTURE PATTERN ===
 	struct PatternLine
 	{
-		std::vector<int> lanes;  // 0=vide, 1=mur, 2=barricade, 3=coin
+		std::vector<int> lanes;  // 0=vide, 1=mur, 2=barricade, 3=coin, 4=shoes
 		float spawnZ;
 	};
 

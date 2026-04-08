@@ -1,0 +1,227 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            6.449804782867432,
+                            10.219139099121094
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            0.10000000149011612,
+                            0.10000000149011612,
+                            0.10000000149011612
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Envir\\Corridor\\scene_mat0.mat",
+                            "1": "Assets\\Models\\Envir\\Corridor\\scene_mat1.mat",
+                            "2": "Assets\\Models\\Envir\\Corridor\\scene_mat2.mat"
+                        },
+                        "model": "Assets\\Models\\Envir\\Corridor\\scene.gltf"
+                    },
+                    "type": "Mesh Component"
+                }
+            ],
+            "id": "2470718867583134056",
+            "name": "Corridor",
+            "parentId": null
+        },
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            3.045961856842041,
+                            41.714752197265625,
+                            72.5608901977539
+                        ],
+                        "rotation": [
+                            0.42221599817276,
+                            -0.9054452180862427,
+                            -0.03953259065747261,
+                            0.018434347584843636
+                        ],
+                        "scale": [
+                            10.0,
+                            10.0,
+                            10.000000953674316
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "color": [
+                            0.8118811845779419,
+                            0.8118811845779419,
+                            0.8118811845779419
+                        ],
+                        "inner_angle": 5.0,
+                        "intensity": 1000.0,
+                        "outer_angle": 90.0,
+                        "range": 50.0
+                    },
+                    "type": "Spot Light"
+                }
+            ],
+            "id": "14127606938658118206",
+            "name": "Light",
+            "parentId": "2470718867583134056"
+        },
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            -1.9540382623672485,
+                            41.714752197265625,
+                            -167.01336669921875
+                        ],
+                        "rotation": [
+                            0.42221599817276,
+                            -0.9054452180862427,
+                            -0.03953259065747261,
+                            0.018434347584843636
+                        ],
+                        "scale": [
+                            10.0,
+                            10.0,
+                            10.000000953674316
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "color": [
+                            0.693069338798523,
+                            0.693069338798523,
+                            0.693069338798523
+                        ],
+                        "inner_angle": 5.0,
+                        "intensity": 1000.0,
+                        "outer_angle": 90.0,
+                        "range": 150.0
+                    },
+                    "type": "Spot Light"
+                }
+            ],
+            "id": "16977807069226588755",
+            "name": "Light",
+            "parentId": "2470718867583134056"
+        },
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            3.045961856842041,
+                            41.714752197265625,
+                            -91.90705871582031
+                        ],
+                        "rotation": [
+                            0.42221599817276,
+                            -0.9054452180862427,
+                            -0.03953259065747261,
+                            0.018434347584843636
+                        ],
+                        "scale": [
+                            10.0,
+                            10.0,
+                            10.000000953674316
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "color": [
+                            0.6941176652908325,
+                            0.6941176652908325,
+                            0.6941176652908325
+                        ],
+                        "inner_angle": 5.0,
+                        "intensity": 1000.0,
+                        "outer_angle": 90.0,
+                        "range": 150.0
+                    },
+                    "type": "Spot Light"
+                }
+            ],
+            "id": "7450774526653169695",
+            "name": "Light",
+            "parentId": "2470718867583134056"
+        },
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            3.045961856842041,
+                            41.714752197265625,
+                            -12.195747375488281
+                        ],
+                        "rotation": [
+                            0.42221599817276,
+                            -0.9054452180862427,
+                            -0.03953259438276291,
+                            0.018434349447488785
+                        ],
+                        "scale": [
+                            10.0,
+                            10.0,
+                            10.000000953674316
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "color": [
+                            0.6138613820075989,
+                            0.6138613820075989,
+                            0.6138613820075989
+                        ],
+                        "inner_angle": 5.0,
+                        "intensity": 1000.0,
+                        "outer_angle": 90.0,
+                        "range": 150.0
+                    },
+                    "type": "Spot Light"
+                }
+            ],
+            "id": "17622418566542534688",
+            "name": "Light",
+            "parentId": "2470718867583134056"
+        }
+    ],
+    "version": 1
+}

@@ -1,5 +1,6 @@
 #include "RunnerPlayerComponent.hpp"
 #include "CollectibleComponent.hpp"
+#include "JumpBoostPickup.hpp"
 
 #include <ImGui/imgui.h>
 #include <Termina/Core/Logger.hpp>
@@ -16,6 +17,10 @@ void RunnerPlayerComponent::Start()
     m_IsGrounded = true;
     m_IsDead = false;
 
+    m_JumpForce = m_BaseJumpForce;
+    m_JumpBoostTimer = 0.0f;
+    m_HasJumpBoost = false;
+
     TN_INFO("RunnerPlayerComponent started on actor '%s'", m_Name.c_str());
 }
 
@@ -23,6 +28,8 @@ void RunnerPlayerComponent::Update(float deltaTime)
 {
     if (m_IsDead)
         return;
+
+    UpdateJumpBoost(deltaTime);
 
     HandleInput();
     MoveForward(deltaTime);
@@ -32,12 +39,14 @@ void RunnerPlayerComponent::Update(float deltaTime)
 
 void RunnerPlayerComponent::HandleInput()
 {
+    // Gauche
     if (TerminaScript::Input::IsKeyPressed(Termina::Key::D) ||
         TerminaScript::Input::IsKeyPressed(Termina::Key::Left))
     {
         m_CurrentLane = (std::max)(-1, m_CurrentLane - 1);
     }
 
+    // Droite
     if (TerminaScript::Input::IsKeyPressed(Termina::Key::A) ||
         TerminaScript::Input::IsKeyPressed(Termina::Key::Right))
     {
@@ -57,9 +66,7 @@ void RunnerPlayerComponent::HandleInput()
 void RunnerPlayerComponent::MoveForward(float deltaTime)
 {
     glm::vec3 position = m_Transform->GetPosition();
-
     position.z += m_ForwardSpeed * deltaTime;
-
     m_Transform->SetPosition(position);
 }
 
@@ -69,7 +76,6 @@ void RunnerPlayerComponent::MoveToTargetLane(float deltaTime)
 
     float targetX = m_StartPosition.x + static_cast<float>(m_CurrentLane) * m_LaneOffset;
     float deltaX = targetX - position.x;
-
     float step = m_LaneChangeSpeed * deltaTime;
 
     if (deltaX > step)
@@ -102,6 +108,34 @@ void RunnerPlayerComponent::UpdateJump(float deltaTime)
     m_Transform->SetPosition(position);
 }
 
+void RunnerPlayerComponent::UpdateJumpBoost(float deltaTime)
+{
+    if (!m_HasJumpBoost)
+        return;
+
+    m_JumpBoostTimer -= deltaTime;
+
+    if (m_JumpBoostTimer <= 0.0f)
+    {
+        m_JumpBoostTimer = 0.0f;
+        m_HasJumpBoost = false;
+        m_JumpForce = m_BaseJumpForce;
+
+        TN_INFO("Jump boost expired");
+    }
+}
+
+void RunnerPlayerComponent::ActivateJumpBoost(float multiplier, float duration)
+{
+    m_HasJumpBoost = true;
+    m_JumpBoostMultiplier = multiplier;
+    m_JumpBoostDuration = duration;
+    m_JumpBoostTimer = duration;
+    m_JumpForce = m_BaseJumpForce * m_JumpBoostMultiplier;
+
+    TN_INFO("Jump boost activated! Multiplier: %.2f | Duration: %.2f", multiplier, duration);
+}
+
 void RunnerPlayerComponent::OnCollisionEnter(Termina::Actor* other)
 {
     if (!other)
@@ -116,12 +150,19 @@ void RunnerPlayerComponent::OnCollisionEnter(Termina::Actor* other)
         if (!collectible.IsCollected())
         {
             collectible.Collect();
-
             m_Score += collectible.value;
-
             Destroy(other);
         }
 
+        return;
+    }
+
+    if (other->HasComponent<JumpBoostPickup>())
+    {
+        auto& jumpBoost = other->GetComponent<JumpBoostPickup>();
+
+        ActivateJumpBoost(jumpBoost.multiplier, jumpBoost.duration);
+        Destroy(other);
         return;
     }
 
@@ -135,9 +176,6 @@ void RunnerPlayerComponent::KillPlayer()
 
     m_IsDead = true;
     TN_ERROR("Game Over");
-
-    // Si tu veux recharger une scène plus tard :
-    // LoadScene("Assets/Scenes/Main.scene");
 }
 
 void RunnerPlayerComponent::Inspect()
@@ -150,11 +188,17 @@ void RunnerPlayerComponent::Inspect()
 
     ImGui::Separator();
 
-    ImGui::DragFloat("Jump Force", &m_JumpForce, 0.1f, 0.0f, 50.0f);
+    ImGui::DragFloat("Base Jump Force", &m_BaseJumpForce, 0.1f, 0.0f, 50.0f);
+    ImGui::Text("Current Jump Force: %.2f", m_JumpForce);
     ImGui::DragFloat("Gravity", &m_Gravity, 0.1f, 0.0f, 100.0f);
     ImGui::DragFloat("Ground Y", &m_GroundY, 0.01f);
 
     ImGui::Separator();
+
+    ImGui::DragFloat("Jump Boost Multiplier", &m_JumpBoostMultiplier, 0.05f, 1.0f, 5.0f);
+    ImGui::DragFloat("Jump Boost Duration", &m_JumpBoostDuration, 0.1f, 0.0f, 30.0f);
+    ImGui::Text("Jump Boost Active: %s", m_HasJumpBoost ? "true" : "false");
+    ImGui::Text("Jump Boost Timer: %.2f", m_JumpBoostTimer);
 
     ImGui::Separator();
 
@@ -162,6 +206,7 @@ void RunnerPlayerComponent::Inspect()
     ImGui::Text("Grounded: %s", m_IsGrounded ? "true" : "false");
     ImGui::Text("Dead: %s", m_IsDead ? "true" : "false");
     ImGui::Text("Vertical Velocity: %.2f", m_VerticalVelocity);
+    ImGui::Text("Score: %d", m_Score);
 }
 
 void RunnerPlayerComponent::Serialize(nlohmann::json& out) const
@@ -169,17 +214,27 @@ void RunnerPlayerComponent::Serialize(nlohmann::json& out) const
     out["forwardSpeed"] = m_ForwardSpeed;
     out["laneOffset"] = m_LaneOffset;
     out["laneChangeSpeed"] = m_LaneChangeSpeed;
-    out["jumpForce"] = m_JumpForce;
+
+    out["baseJumpForce"] = m_BaseJumpForce;
     out["gravity"] = m_Gravity;
     out["groundY"] = m_GroundY;
+
+    out["jumpBoostMultiplier"] = m_JumpBoostMultiplier;
+    out["jumpBoostDuration"] = m_JumpBoostDuration;
 }
 
 void RunnerPlayerComponent::Deserialize(const nlohmann::json& in)
 {
-    if (in.contains("forwardSpeed"))       m_ForwardSpeed = in["forwardSpeed"];
-    if (in.contains("laneOffset"))         m_LaneOffset = in["laneOffset"];
-    if (in.contains("laneChangeSpeed"))    m_LaneChangeSpeed = in["laneChangeSpeed"];
-    if (in.contains("jumpForce"))          m_JumpForce = in["jumpForce"];
-    if (in.contains("gravity"))            m_Gravity = in["gravity"];
-    if (in.contains("groundY"))            m_GroundY = in["groundY"];
+    if (in.contains("forwardSpeed"))         m_ForwardSpeed = in["forwardSpeed"];
+    if (in.contains("laneOffset"))           m_LaneOffset = in["laneOffset"];
+    if (in.contains("laneChangeSpeed"))      m_LaneChangeSpeed = in["laneChangeSpeed"];
+
+    if (in.contains("baseJumpForce"))        m_BaseJumpForce = in["baseJumpForce"];
+    if (in.contains("gravity"))              m_Gravity = in["gravity"];
+    if (in.contains("groundY"))              m_GroundY = in["groundY"];
+
+    if (in.contains("jumpBoostMultiplier"))  m_JumpBoostMultiplier = in["jumpBoostMultiplier"];
+    if (in.contains("jumpBoostDuration"))    m_JumpBoostDuration = in["jumpBoostDuration"];
+
+    m_JumpForce = m_BaseJumpForce;
 }

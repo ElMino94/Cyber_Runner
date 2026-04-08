@@ -13,6 +13,7 @@ void Procedural::Start()
 	m_WallPrefab = TerminaScript::Prefab("Assets/Prefabs/Wall.trp");
 	m_BarricadePrefab = TerminaScript::Prefab("Assets/Prefabs/Barricade.trp");
 	m_Coin = TerminaScript::Prefab("Assets/Prefabs/Coin.trp");
+	m_Shoes = TerminaScript::Prefab("Assets/Prefabs/Shoes.trp");
 
 	// Chercher le joueur
 	findPlayerActor();
@@ -36,7 +37,10 @@ void Procedural::Start()
 		{PATTERN_COINS_LEFT, 1.2f},
 		{PATTERN_COINS_RIGHT, 1.2f},
 		{PATTERN_COINS_CENTER, 1.0f},
-		{PATTERN_COINS_ALL, 0.8f}
+		{PATTERN_COINS_ALL, 0.8f},
+		{PATTERN_SHOES_LEFT, 0.9f},
+		{PATTERN_SHOES_RIGHT, 0.9f},
+		{PATTERN_SHOES_CENTER, 0.9f}
 	};
 
 	// Génération initiale
@@ -191,7 +195,7 @@ void Procedural::DestroyObjects()
 		{
 			obj->GetComponent<Termina::BoxCollider>().SetActive(false);
 		}
-		Destroy(obj);
+		m_Owner->GetParentWorld()->DestroyActor(obj);
 	}
 
 	m_ObjectsToDestroy.clear();
@@ -307,9 +311,19 @@ void Procedural::generatePattern(PatternType type, std::vector<int>& lanes)
 
 		case PATTERN_COINS_ALL:
 			lanes = { 3, 3, 3 };
-
-
 			m_NextSpawnZ += m_SpacingBetweenPatterns * 0.5f;
+			break;
+
+		case PATTERN_SHOES_LEFT:
+			lanes = {4, 0, 0};
+			break;
+
+		case PATTERN_SHOES_RIGHT:
+			lanes = {0, 0, 4};
+			break;
+
+		case PATTERN_SHOES_CENTER:
+			lanes = {0, 4, 0};
 			break;
 
 		default:
@@ -342,11 +356,16 @@ void Procedural::spawnObstaclesForLine(const PatternLine& line)
 
 		case 2: // BARRICADE
 			obstacle = Instantiate(m_BarricadePrefab);
-			yPos = 1.0f;
+			yPos = 1.5f;
 			break;
 
 		case 3: // COIN
 			obstacle = Instantiate(m_Coin);
+			yPos = 2.0f;
+			break;
+
+		case 4: // SHOES (BOOST)
+			obstacle = Instantiate(m_Shoes);
 			yPos = 2.0f;
 			break;
 		}
