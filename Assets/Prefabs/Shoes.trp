@@ -1,0 +1,91 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Shoes\\Goku Shoes_mat0.mat"
+                        },
+                        "model": "Assets\\Models\\Shoes\\Goku Shoes.glb"
+                    },
+                    "type": "Mesh Component"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "allow_sleep": false,
+                        "angular_damping": 0.05000000074505806,
+                        "freeze_pos": [
+                            false,
+                            false,
+                            false
+                        ],
+                        "freeze_rot": [
+                            false,
+                            false,
+                            false
+                        ],
+                        "gravity_factor": 1.0,
+                        "is_sensor": true,
+                        "linear_damping": 0.05000000074505806,
+                        "mass": 1.0,
+                        "type": 1
+                    },
+                    "type": "Rigidbody"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "offset": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "radius": 1.0,
+                        "rot_off": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Sphere Collider"
+                },
+                {
+                    "active": true,
+                    "data": {},
+                    "type": "Collectibles"
+                }
+            ],
+            "id": "10990660180973087925",
+            "name": "Shoes",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}
