@@ -25,7 +25,7 @@ private:
 
 private:
     float m_ForwardSpeed = 10.0f;
-    float m_LaneOffset = 2.5f;
+    float m_LaneOffset = 1.5f;
     float m_LaneChangeSpeed = 14.0f;
 
     float m_JumpForce = 9.0f;

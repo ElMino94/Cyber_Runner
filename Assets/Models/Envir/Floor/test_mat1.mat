@@ -1,5 +1,5 @@
 {
-  "albedo_texture": "Assets\\Models\\Envir\\Texture\\Metal_White\\Metal_White_BaseColor.png",
+  "albedo_texture": "Assets\\Models\\Envir\\Floor\\Texture\\Metal_White\\Metal_White_BaseColor.png",
   "alpha_test": false,
   "color": [
     1.0,
@@ -8,8 +8,8 @@
   ],
   "emissive_texture": "",
   "metallic_factor": 1.0,
-  "normal_texture": "Assets\\Models\\Envir\\Texture\\Metal_White\\Metal_White_Normal.png",
-  "orm_texture": "Assets\\Models\\Envir\\Texture\\Metal_White\\Metal_White_Roughness.png",
+  "normal_texture": "Assets\\Models\\Envir\\Floor\\Texture\\Metal_White\\Metal_White_Normal.png",
+  "orm_texture": "Assets\\Models\\Envir\\Floor\\Texture\\Metal_White\\Metal_White_Roughness.png",
   "override_metallic": false,
   "override_roughness": false,
   "roughness_factor": 1.0
