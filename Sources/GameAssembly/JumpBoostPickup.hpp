@@ -16,7 +16,7 @@ public:
     void Deserialize(const nlohmann::json& in) override;
 
 public:
-    float multiplier = 1.5f;
+    float multiplier = 2.0f;
     float duration = 5.0f;
 
 private:

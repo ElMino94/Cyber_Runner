@@ -32,9 +32,9 @@ private:
     float m_LaneOffset = 2.5f;
     float m_LaneChangeSpeed = 14.0f;
 
-    float m_BaseJumpForce = 9.0f;
+    float m_BaseJumpForce = 10.0f;
     float m_JumpForce = 9.0f;
-    float m_Gravity = 25.0f;
+    float m_Gravity = 20.0f;
     float m_GroundY = 0.0f;
 
     float m_JumpBoostMultiplier = 1.5f;

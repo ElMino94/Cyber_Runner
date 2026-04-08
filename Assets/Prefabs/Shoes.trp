@@ -7,9 +7,9 @@
                     "active": true,
                     "data": {
                         "position": [
-                            0.0,
-                            0.0,
-                            0.0
+                            0.008647918701171875,
+                            0.7872390747070313,
+                            4.367712020874023
                         ],
                         "rotation": [
                             1.0,
@@ -80,9 +80,18 @@
                     "active": true,
                     "data": {},
                     "type": "Collectibles"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "duration": 5.0,
+                        "multiplier": 8.5,
+                        "rotationSpeed": 120.0
+                    },
+                    "type": "Jump Boost Pickup"
                 }
             ],
-            "id": "10990660180973087925",
+            "id": "6712771523083473567",
             "name": "Shoes",
             "parentId": null
         }
