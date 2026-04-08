@@ -1,0 +1,11 @@
+Model Information:
+* title:	SF Glass Corridor
+* source:	https://sketchfab.com/3d-models/sf-glass-corridor-730c349e1f734e58af1f2ed868c53f5f
+* author:	d880 (https://sketchfab.com/distance880)
+
+Model License:
+* license type:	CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)
+* requirements:	Author must be credited. No commercial use.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "SF Glass Corridor" (https://sketchfab.com/3d-models/sf-glass-corridor-730c349e1f734e58af1f2ed868c53f5f) by d880 (https://sketchfab.com/distance880) licensed under CC-BY-NC-4.0 (http://creativecommons.org/licenses/by-nc/4.0/)

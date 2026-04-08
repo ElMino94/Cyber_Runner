@@ -1,0 +1,134 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            1.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Envir\\Floor\\test_mat0.mat",
+                            "1": "Assets\\Models\\Envir\\Floor\\test_mat1.mat",
+                            "2": "Assets\\Models\\Envir\\Floor\\test_mat2.mat",
+                            "3": "Assets\\Models\\Envir\\Floor\\test_mat3.mat"
+                        },
+                        "model": "Assets\\Models\\Envir\\Floor\\test.gltf"
+                    },
+                    "type": "Mesh Component"
+                }
+            ],
+            "id": "3886158431889017936",
+            "name": "Floor",
+            "parentId": null
+        },
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            2.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Envir\\Floor\\test_mat0.mat",
+                            "1": "Assets\\Models\\Envir\\Floor\\test_mat1.mat",
+                            "2": "Assets\\Models\\Envir\\Floor\\test_mat2.mat",
+                            "3": "Assets\\Models\\Envir\\Floor\\test_mat3.mat"
+                        },
+                        "model": "Assets\\Models\\Envir\\Floor\\test.gltf"
+                    },
+                    "type": "Mesh Component"
+                }
+            ],
+            "id": "18265300167454161774",
+            "name": "Floor",
+            "parentId": "3886158431889017936"
+        },
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            -2.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Envir\\Floor\\test_mat0.mat",
+                            "1": "Assets\\Models\\Envir\\Floor\\test_mat1.mat",
+                            "2": "Assets\\Models\\Envir\\Floor\\test_mat2.mat",
+                            "3": "Assets\\Models\\Envir\\Floor\\test_mat3.mat"
+                        },
+                        "model": "Assets\\Models\\Envir\\Floor\\test.gltf"
+                    },
+                    "type": "Mesh Component"
+                }
+            ],
+            "id": "18073081470891833773",
+            "name": "Floor",
+            "parentId": "3886158431889017936"
+        }
+    ],
+    "version": 1
+}

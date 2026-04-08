@@ -11,6 +11,7 @@
 #include "RunnerGameManager.hpp"
 #include "CollideCheck.hpp"
 #include "JumpBoostPickup.hpp"
+#include "SideScrolling.hpp"
 
 
 COMPONENT_MODULE_BEGIN()
@@ -23,6 +24,8 @@ COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(Procedural, "Procedural manager")    
     REGISTER_COMPONENT(CollideStatus, "ColliderCheck")
     REGISTER_COMPONENT(JumpBoostPickup, "Jump Boost Pickup")
+    REGISTER_COMPONENT(SideScrolling, "Side Scrolling Manager")
+	
 COMPONENT_MODULE_END()
 
 TERMINA_DLL_EXPORT void SetImGuiContext(void* ctx, void* allocFunc, void* freeFunc, void* userData)
