@@ -12,12 +12,12 @@ void JumpBoostPickup::Start()
     TN_INFO("JumpBoostPickup started on actor '%s' | Multiplier: %.2f | Duration: %.2f", 
             m_Name.c_str(), multiplier, duration);
     
-    // Rï¿½cupï¿½rer le joueur
+    // Récupérer le joueur
     m_Player = m_Owner->GetParentWorld()->GetActorByName("Player");
     
     if (m_Player)
     {
-        TN_INFO("JumpBoostPickup: Joueur trouvï¿½");
+        TN_INFO("JumpBoostPickup: Joueur trouvé");
     }
     else
     {
@@ -57,6 +57,15 @@ void JumpBoostPickup::Deserialize(const nlohmann::json& in)
     if (in.contains("multiplier"))    multiplier = in["multiplier"];
     if (in.contains("duration"))      duration = in["duration"];
     if (in.contains("rotationSpeed")) m_RotationSpeed = in["rotationSpeed"];
+}
+
+void JumpBoostPickup::OnTriggerEnter(Termina::Actor* other)
+{
+    if (!other || other != m_Player)
+        return;
+
+    if (IsTaken)
+        return;
 
     TN_INFO("JumpBoostPickup: Collision avec le joueur! Activation boost: x%.2f pour %.1f sec", 
             multiplier, duration);
@@ -77,10 +86,10 @@ void JumpBoostPickup::Deserialize(const nlohmann::json& in)
     if (m_Owner->HasComponent<Termina::MeshComponent>())
         m_Owner->RemoveComponent<Termina::MeshComponent>();
 
-    // Dï¿½sactiver tous les composants restants
+    // Désactiver tous les composants restants
     for (auto* comp : m_Owner->GetAllComponents())
         comp->SetActive(false);
 
-    // Dï¿½sactiver l'actor lui-mï¿½me
+    // Désactiver l'actor lui-même
     m_Owner->SetActive(false);
 }
