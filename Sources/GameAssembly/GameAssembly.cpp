@@ -2,11 +2,17 @@
 #include <Termina/World/ComponentRegistry.hpp>
 #include <ImGui/imgui.h>
 
-#include "FlyCamComponent.hpp"
+#include "FlyCamComponent.hpp" 
 #include "ParticleSystem.hpp"
 #include "PhysicsTestComponent.hpp"
 #include "MenuComponent.hpp"
 #include "GameManagerComponent.hpp"
+#include "RunnerPlayerComponent.hpp"
+#include "CollectibleComponent.hpp"
+#include "Procedural.hpp"
+#include "RunnerGameManager.hpp"
+#include "CollideCheck.hpp"
+
 
 COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(FlyCamComponent, "Fly Cam Component")
@@ -14,6 +20,12 @@ COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(PhysicsTestComponent, "Physics Test")
     REGISTER_COMPONENT(MenuComponent, "Menu")
     REGISTER_COMPONENT(GameManagerComponent, "GameManager")
+    REGISTER_COMPONENT(RunnerGameManager, "Runner Game Manager")
+    REGISTER_COMPONENT(RunnerPlayerComponent, "Runner Player Component")
+    REGISTER_COMPONENT(Collectibles, "Collectibles")
+    REGISTER_COMPONENT(Procedural, "Procedural manager")    
+    REGISTER_COMPONENT(CollideStatus, "ColliderCheck")
+
 COMPONENT_MODULE_END()
 
 TERMINA_DLL_EXPORT void SetImGuiContext(void* ctx, void* allocFunc, void* freeFunc, void* userData)

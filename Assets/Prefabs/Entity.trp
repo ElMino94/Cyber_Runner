@@ -1,0 +1,64 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "model": "Assets\\Models\\Cube\\Cube.gltf"
+                    },
+                    "type": "Mesh Component"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "half_extents": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "offset": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rot_off": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Box Collider"
+                }
+            ],
+            "id": "5803515360717267670",
+            "name": "Entity",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}

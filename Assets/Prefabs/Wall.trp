@@ -1,0 +1,95 @@
+{
+    "actors": [
+        {
+            "active": true,
+            "components": [
+                {
+                    "active": true,
+                    "data": {
+                        "position": [
+                            0.0,
+                            2.065642833709717,
+                            13.00873851776123
+                        ],
+                        "rotation": [
+                            1.0,
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "scale": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Transform"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "material_overrides": {
+                            "0": "Assets\\Models\\Wall\\scene_mat0.mat"
+                        },
+                        "model": "Assets\\Models\\Wall\\scene.gltf"
+                    },
+                    "type": "Mesh Component"
+                },
+                {
+                    "active": true,
+                    "data": {},
+                    "type": "ColliderCheck"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "half_extents": [
+                            1.0,
+                            1.0,
+                            1.0
+                        ],
+                        "offset": [
+                            0.0,
+                            0.0,
+                            0.0
+                        ],
+                        "rot_off": [
+                            0.0,
+                            0.0,
+                            0.0,
+                            1.0
+                        ]
+                    },
+                    "type": "Box Collider"
+                },
+                {
+                    "active": true,
+                    "data": {
+                        "allow_sleep": false,
+                        "angular_damping": 0.05000000074505806,
+                        "freeze_pos": [
+                            true,
+                            true,
+                            true
+                        ],
+                        "freeze_rot": [
+                            false,
+                            false,
+                            false
+                        ],
+                        "gravity_factor": 1.0,
+                        "is_sensor": true,
+                        "linear_damping": 0.05000000074505806,
+                        "mass": 1.0,
+                        "type": 1
+                    },
+                    "type": "Rigidbody"
+                }
+            ],
+            "id": "10927277508965633561",
+            "name": "Wall",
+            "parentId": null
+        }
+    ],
+    "version": 1
+}

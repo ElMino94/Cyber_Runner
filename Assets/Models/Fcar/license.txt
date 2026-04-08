@@ -1,0 +1,11 @@
+Model Information:
+* title:	CAT-330: Civil Air Transport
+* source:	https://sketchfab.com/3d-models/cat-330-civil-air-transport-c371e83e22b143398e5dff9a90e467ff
+* author:	MRowa (https://sketchfab.com/MRowa)
+
+Model License:
+* license type:	CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
+* requirements:	Author must be credited. Modified versions must have the same license. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "CAT-330: Civil Air Transport" (https://sketchfab.com/3d-models/cat-330-civil-air-transport-c371e83e22b143398e5dff9a90e467ff) by MRowa (https://sketchfab.com/MRowa) licensed under CC-BY-SA-4.0 (http://creativecommons.org/licenses/by-sa/4.0/)
