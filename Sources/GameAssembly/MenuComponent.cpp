@@ -52,6 +52,7 @@ void MenuComponent::OnRender(float dt)
 
     if (ImGui::Button("Play", ImVec2(200, 50)))
     {
+        LoadScene(m_WorldToLoad);
         m_PlayRequested = true;
     }
 
