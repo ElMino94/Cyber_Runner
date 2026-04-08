@@ -1,8 +1,8 @@
-#pragma once
+#include "MenuComponent.hpp"
 
-#include <Termina/Scripting/API/ScriptingAPI.hpp>
+using namespace TerminaScript;
 
-class GameManagerComponent : public TerminaScript::ScriptableComponent
+class GameManagerComponent : public ScriptableComponent
 {
 public:
     GameManagerComponent() = default;
@@ -10,5 +10,17 @@ public:
         : ScriptableComponent(owner) {
     }
 
+    void Start() override;
     void Update(float deltaTime) override;
+
+public:
+    // Public members
+
+private:
+    // Private functions
+    void HandleMenu(MenuComponent* menu);
+
+private:
+    // Private members
+    bool m_GameStarted = false;
 };

@@ -1,30 +1,30 @@
 #pragma once
 
 #include <Termina/Scripting/API/ScriptingAPI.hpp>
-#include <JSON/json.hpp>
 
-class MenuComponent : public TerminaScript::ScriptableComponent
+using namespace TerminaScript;
+
+class MenuComponent : public ScriptableComponent
 {
 public:
     MenuComponent() = default;
     MenuComponent(Termina::Actor* owner)
-        : TerminaScript::ScriptableComponent(owner) {}
+        : ScriptableComponent(owner) {
+    }
 
-    void Start() override;
-    void Update(float deltaTime) override;
-    void Inspect() override;
-
-    void Serialize(nlohmann::json& out) const override;
-    void Deserialize(const nlohmann::json& in) override;
+    void OnRender(float dt) override;
 
     bool IsPlayRequested() const { return m_PlayRequested; }
     bool IsQuitRequested() const { return m_QuitRequested; }
 
-private:
-    void DrawMenu();
+    void ResetRequests()
+    {
+        m_PlayRequested = false;
+        m_QuitRequested = false;
+    }
 
 private:
-    bool m_IsActive = true;
+    std::string m_WorldToLoad = "Assets/Worlds/Maps/map_teva1";
 
     bool m_PlayRequested = false;
     bool m_QuitRequested = false;
