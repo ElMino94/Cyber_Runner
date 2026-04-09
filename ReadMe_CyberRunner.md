@@ -38,7 +38,8 @@ Cette commande permet de créer automatiquement la solution du jeu.
 
 - Ouvrir la solution générée avec Visual Studio
 - Compiler tout le moteur complet
-- Lancer l’éditeur du moteur
+- Lancer l’éditeur du moteur ( définir en tant que projet de démarrage )
+- Gestion de configuration : releasedbg
 
 ---
 
