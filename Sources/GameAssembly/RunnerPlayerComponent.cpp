@@ -10,6 +10,7 @@
 void RunnerPlayerComponent::Start()
 {
     m_StartPosition = m_Transform->GetPosition();
+
     m_GroundY = m_StartPosition.y;
 
     m_CurrentLane = 0;
@@ -131,7 +132,7 @@ void RunnerPlayerComponent::ActivateJumpBoost(float multiplier, float duration)
     m_JumpBoostMultiplier = multiplier;
     m_JumpBoostDuration = duration;
     m_JumpBoostTimer = duration;
-    m_JumpForce = m_BaseJumpForce * m_JumpBoostMultiplier;
+    m_JumpForce = m_BaseJumpForce + 5.0f;
 
     TN_INFO("Jump boost activated! Multiplier: %.2f | Duration: %.2f", multiplier, duration);
 }

@@ -17,7 +17,7 @@ public:
     void OnTriggerEnter(Termina::Actor* other) override;
 
 public:
-    float multiplier = 1.5f;  // Multiplicateur du saut (ex: 1.5 = 50% plus haut)
+    float multiplier = 1.2f;  // Multiplicateur du saut (ex: 1.5 = 50% plus haut)
     float duration = 5.0f;    // Durée en secondes
     bool IsTaken = false;
 
