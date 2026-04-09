@@ -10,7 +10,7 @@ class Procedural : public TerminaScript::ScriptableComponent
 {
 private:
 	// === PARAMÈTRES DE GÉNÉRATION ===
-	float m_LaneWidth = 2.0f;
+	float m_LaneWidth = 2.5f;
 	float m_SpacingBetweenPatterns = 4.5f;
 	float m_DestroyDistance = 20.0f;
 	int m_LastSafeLane = 1;

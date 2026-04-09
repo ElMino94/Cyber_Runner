@@ -82,14 +82,11 @@ void JumpBoostPickup::OnTriggerEnter(Termina::Actor* other)
 
     IsTaken = true;
 
-    // Supprimer le composant mesh pour masquer l'objet
     if (m_Owner->HasComponent<Termina::MeshComponent>())
         m_Owner->RemoveComponent<Termina::MeshComponent>();
 
-    // Désactiver tous les composants restants
     for (auto* comp : m_Owner->GetAllComponents())
         comp->SetActive(false);
 
-    // Désactiver l'actor lui-même
     m_Owner->SetActive(false);
 }
