@@ -9,6 +9,7 @@
 void GameManagerComponent::Start()
 {
     m_GameStarted = false;
+    TN_INFO("GameManagerComponent started on actor '%s'", m_Name.c_str());
 }
 
 void GameManagerComponent::Update(float deltaTime)
@@ -23,38 +24,47 @@ void GameManagerComponent::Update(float deltaTime)
     if (!world)
         return;
 
-    for (auto& actorPtr : world->GetActors())
+    const auto& actors = world->GetActors();
+    for (const auto& actorPtr : actors)
     {
         Termina::Actor* actor = actorPtr.get();
-
-        MenuComponent* menu = nullptr;
-
-        for (auto* comp : actor->GetAllComponents())
-        {
-            menu = dynamic_cast<MenuComponent*>(comp);
-            if (menu)
-                break;
-        }
-
-        if (!menu)
+        if (!actor)
             continue;
 
-        if (menu->IsPlayRequested() && !m_GameStarted)
+        if (!actor->HasComponent<MenuComponent>())
+            continue;
+
+        MenuComponent* menu = &actor->GetComponent<MenuComponent>();
+        HandleMenu(menu);
+        break;
+    }
+}
+
+void GameManagerComponent::HandleMenu(MenuComponent* menu)
+{
+    if (!menu)
+        return;
+
+    if (menu->IsPlayRequested() && !m_GameStarted)
+    {
+        m_GameStarted = true;
+        menu->ResetRequests();
+
+        TN_INFO("Loading game world");
+
+        auto* worldSystem = Termina::Application::GetSystem<Termina::WorldSystem>();
+        if (worldSystem)
         {
-            m_GameStarted = true;
-
-            TN_INFO("Loading game world");
-
             worldSystem->LoadWorld("Assets/Worlds/Maps/map_teva1");
-
-            return;
         }
 
-        if (menu->IsQuitRequested())
-        {
-            TN_INFO("Quit requested");
+        return;
+    }
 
-            return;
-        }
+    if (menu->IsQuitRequested())
+    {
+        menu->ResetRequests();
+        TN_INFO("Quit requested");
+        exit(0);
     }
 }
