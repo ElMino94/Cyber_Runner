@@ -39,24 +39,13 @@ void GameOverComponent::OnRender(float dt)
     ImGui::End();
 
     // Buttons
-    ImGui::SetNextWindowPos(ImVec2(width * 0.5f, height * 0.7f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+    ImGui::SetNextWindowPos(ImVec2(width * 0.5f, height * 0.6f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
     ImGui::SetNextWindowBgAlpha(0.0f);
 
     ImGui::Begin("Menu", nullptr,
         ImGuiWindowFlags_NoDecoration |
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_AlwaysAutoResize);
-
-    if (ImGui::Button("Retry", ImVec2(200, 50)))
-    {
-        auto* worldSystem = Termina::Application::GetSystem<Termina::WorldSystem>();
-        if (worldSystem)
-        {
-            worldSystem->LoadWorld("Assets/Worlds/Maps/map_teva1");
-        }
-    }
-
-    ImGui::SameLine();
 
     if (ImGui::Button("Back to Menu", ImVec2(200, 50)))
     {
