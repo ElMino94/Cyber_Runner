@@ -54,12 +54,9 @@ void GameOverComponent::OnRender(float dt)
 
         if (worldSystem)
         {
-            // Charge la map et, si OK, passe immédiatement en mode play
-            if (worldSystem->LoadWorld("Assets/Worlds/Maps/map_menu"))
-            {
-                worldSystem->Play();
-            }
+            worldSystem->LoadWorld("Assets/Worlds/Maps/map_menu");
         }
+
     }
 
     ImGui::End();
