@@ -18,6 +18,7 @@ public:
 
 public:
     void ActivateJumpBoost(float multiplier, float duration);
+    void KillPlayer();
 
 private:
     void HandleInput();
@@ -25,7 +26,6 @@ private:
     void MoveToTargetLane(float deltaTime);
     void UpdateJump(float deltaTime);
     void UpdateJumpBoost(float deltaTime);
-    void KillPlayer();
 
 private:
     float m_ForwardSpeed = 10.0f;
@@ -41,7 +41,7 @@ private:
     float m_JumpBoostDuration = 5.0f;
     float m_JumpBoostTimer = 0.0f;
 
-    int   m_CurrentLane = 0;   // -1 gauche, 0 centre, 1 droite
+    int   m_CurrentLane = 0;
     float m_VerticalVelocity = 0.0f;
 
     bool  m_IsGrounded = true;

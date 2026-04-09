@@ -34,7 +34,7 @@ void GameOverComponent::OnRender(float dt)
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_AlwaysAutoResize);
 
-    ImGui::Text("GAME OVER");
+    ImGui::TextColored(ImVec4(1, 0, 0, 1), "GAME OVER");
 
     ImGui::End();
 
@@ -47,16 +47,24 @@ void GameOverComponent::OnRender(float dt)
         ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_AlwaysAutoResize);
 
+    if (ImGui::Button("Retry", ImVec2(200, 50)))
+    {
+        auto* worldSystem = Termina::Application::GetSystem<Termina::WorldSystem>();
+        if (worldSystem)
+        {
+            worldSystem->LoadWorld("Assets/Worlds/Maps/map_teva1");
+        }
+    }
+
+    ImGui::SameLine();
+
     if (ImGui::Button("Back to Menu", ImVec2(200, 50)))
     {
-        auto* worldSystem =
-            Termina::Application::GetSystem<Termina::WorldSystem>();
-
+        auto* worldSystem = Termina::Application::GetSystem<Termina::WorldSystem>();
         if (worldSystem)
         {
             worldSystem->LoadWorld("Assets/Worlds/Maps/map_menu");
         }
-
     }
 
     ImGui::End();

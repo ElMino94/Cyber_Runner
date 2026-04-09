@@ -121,7 +121,7 @@ void RunnerPlayerComponent::UpdateJumpBoost(float deltaTime)
         m_HasJumpBoost = false;
         m_JumpForce = m_BaseJumpForce;
 
-        TN_INFO("Jump boost expired");
+        TN_INFO("Jump boost expired | Back to base jump force: %.2f", m_BaseJumpForce);
     }
 }
 
@@ -133,7 +133,8 @@ void RunnerPlayerComponent::ActivateJumpBoost(float multiplier, float duration)
     m_JumpBoostTimer = duration;
     m_JumpForce = m_BaseJumpForce * m_JumpBoostMultiplier;
 
-    TN_INFO("Jump boost activated! Multiplier: %.2f | Duration: %.2f", multiplier, duration);
+    TN_INFO("Jump boost activated! BaseForce: %.2f | Multiplier: %.2f | NewForce: %.2f | Duration: %.2f", 
+            m_BaseJumpForce, multiplier, m_JumpForce, duration);
 }
 
 void RunnerPlayerComponent::OnCollisionEnter(Termina::Actor* other)
@@ -175,7 +176,11 @@ void RunnerPlayerComponent::KillPlayer()
         return;
 
     m_IsDead = true;
-    TN_ERROR("Game Over");
+    TN_ERROR("Game Over!");
+    
+    // Charger la map Game Over
+    std::string gameOverPath = std::string("Assets/Worlds/Maps/map_GameOver");
+    LoadScene(gameOverPath);
 }
 
 void RunnerPlayerComponent::Inspect()
@@ -195,10 +200,15 @@ void RunnerPlayerComponent::Inspect()
 
     ImGui::Separator();
 
-    ImGui::DragFloat("Jump Boost Multiplier", &m_JumpBoostMultiplier, 0.05f, 1.0f, 5.0f);
-    ImGui::DragFloat("Jump Boost Duration", &m_JumpBoostDuration, 0.1f, 0.0f, 30.0f);
-    ImGui::Text("Jump Boost Active: %s", m_HasJumpBoost ? "true" : "false");
-    ImGui::Text("Jump Boost Timer: %.2f", m_JumpBoostTimer);
+    ImGui::TextColored(ImVec4(1, 1, 0, 1), "=== Jump Boost Status ===");
+    ImGui::Text("Boost Active: %s", m_HasJumpBoost ? "YES" : "NO");
+    if (m_HasJumpBoost)
+    {
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "Active Multiplier: %.2f", m_JumpBoostMultiplier);
+        ImGui::TextColored(ImVec4(0, 1, 0, 1), "Time Remaining: %.2f / %.2f sec", m_JumpBoostTimer, m_JumpBoostDuration);
+    }
+    ImGui::DragFloat("Default Boost Multiplier", &m_JumpBoostMultiplier, 0.05f, 1.0f, 5.0f);
+    ImGui::DragFloat("Default Boost Duration", &m_JumpBoostDuration, 0.1f, 0.0f, 30.0f);
 
     ImGui::Separator();
 

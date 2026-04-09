@@ -2,8 +2,7 @@
 #include <Termina/Physics/Components/BoxCollider.hpp>
 #include <Termina/Physics/Components/Rigidbody.hpp>
 #include <Termina/Core/Logger.hpp>
-#include <Termina/Core/Application.hpp>
-#include <Termina/World/WorldSystem.hpp>
+#include "RunnerPlayerComponent.hpp"
 
 void CollideStatus::Start()
 {
@@ -21,7 +20,10 @@ void CollideStatus::Start()
 	{
 		auto& rigidbody = m_Owner->AddComponent<Termina::Rigidbody>();
 		rigidbody.Type = Termina::Rigidbody::BodyType::Kinematic;
+		rigidbody.IsSensor = true;
 	}
+
+	TN_INFO("CollideCheck initialized on actor '%s'", m_Owner->GetName().c_str());
 }
 
 void CollideStatus::Update(float dt)
@@ -31,23 +33,19 @@ void CollideStatus::Update(float dt)
 
 void CollideStatus::OnTriggerEnter(Termina::Actor* other)
 {
-    if (!other || other != m_Player)
-        return;
+	if (!other || other != m_Player)
+		return;
 
-    if (HasCollided == true)
-        return;
+	if (HasCollided == true)
+		return;
 
-
-	auto* worldSystem =
-		Termina::Application::GetSystem<Termina::WorldSystem>();
-
-	if (worldSystem)
-	{
-		worldSystem->LoadWorld("Assets/Worlds/Maps/map_GameOver");
-	}
-
-
-	//place all code above this line or else it will bring problems whith colide
-    HasCollided = true;
+	TN_ERROR("Player collision triggered! Loading Game Over screen...");
+	HasCollided = true;
 	
+	// Le player va gérer la transition via KillPlayer()
+	if (m_Player && m_Player->HasComponent<RunnerPlayerComponent>())
+	{
+		auto& playerComponent = m_Player->GetComponent<RunnerPlayerComponent>();
+		playerComponent.KillPlayer();
+	}
 }
