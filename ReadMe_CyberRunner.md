@@ -37,7 +37,7 @@ Cette commande permet de créer automatiquement la solution du jeu.
 ### Ouverture du projet
 
 - Ouvrir la solution générée avec Visual Studio
-- Compiler le projet si nécessaire
+- Compiler tout le moteur complet
 - Lancer l’éditeur du moteur
 
 ---
@@ -376,9 +376,7 @@ L’interface reste volontairement simple afin de :
 
 ### Possibilités d’amélioration
 
-- affichage du score
 - bouton "Restart"
-- transitions visuelles
 - animations UI
 
 ## Conclusion
