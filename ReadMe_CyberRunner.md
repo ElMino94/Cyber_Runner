@@ -197,6 +197,11 @@ Les objets trop éloignés derrière le joueur sont supprimés.
 
 position.z += speed * deltaTime
 
+Q = se déplacer à gauche
+D = se déplacer à droite
+
+Space = sauter
+
 
 ---
 
