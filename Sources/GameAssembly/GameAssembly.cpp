@@ -14,6 +14,7 @@
 #include "CollideCheck.hpp"
 #include "JumpBoostPickup.hpp"
 #include "SideScrolling.hpp"
+#include "GameOverComponent.hpp"
 
 
 COMPONENT_MODULE_BEGIN()
@@ -21,6 +22,7 @@ COMPONENT_MODULE_BEGIN()
     REGISTER_COMPONENT(ParticleSystemComponent, "Particle System")
     REGISTER_COMPONENT(PhysicsTestComponent, "Physics Test")
     REGISTER_COMPONENT(MenuComponent, "Menu")
+    REGISTER_COMPONENT(GameOverComponent, "GameOver")
     REGISTER_COMPONENT(GameManagerComponent, "GameManager")
     REGISTER_COMPONENT(RunnerGameManager, "Runner Game Manager")
     REGISTER_COMPONENT(RunnerPlayerComponent, "Runner Player Component")

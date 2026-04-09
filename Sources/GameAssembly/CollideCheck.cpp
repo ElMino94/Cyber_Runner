@@ -2,6 +2,8 @@
 #include <Termina/Physics/Components/BoxCollider.hpp>
 #include <Termina/Physics/Components/Rigidbody.hpp>
 #include <Termina/Core/Logger.hpp>
+#include <Termina/Core/Application.hpp>
+#include <Termina/World/WorldSystem.hpp>
 
 void CollideStatus::Start()
 {
@@ -36,8 +38,13 @@ void CollideStatus::OnTriggerEnter(Termina::Actor* other)
         return;
 
 
-	TN_INFO("Game over", m_Owner->GetName().c_str());
+	auto* worldSystem =
+		Termina::Application::GetSystem<Termina::WorldSystem>();
 
+	if (worldSystem)
+	{
+		worldSystem->LoadWorld("Assets/Worlds/Maps/map_GameOver");
+	}
 
 
 	//place all code above this line or else it will bring problems whith colide
